@@ -50,12 +50,12 @@ const commandHandler = (message: Message) => {
 	const res = getParams(message)
 	if (!res) return
 	const [command, args] = res
-	debug(command)
-	debug(args)
-	
+	console.log(command, args)
+
 	
 }
 
+const SEPARATOR = '='
 const getParams = (message: Message) => {
 	
 	if (message.author.bot) return
@@ -63,10 +63,23 @@ const getParams = (message: Message) => {
 	
 	const argstr = message.content.slice(config.prefix.length).trim()
 	if (!argstr) return
-	const args = argstr.split(/ +/g)
+	const args_array = argstr.split(/ +/g)
 	
-	const command = args.shift()
+	const command = args_array.shift()
 	if (command === undefined) return
+	
+	const args = args_array.reduce((prev, curr) => {
+		const entry = curr.split(SEPARATOR)
+		if (entry.length !== 2) return {
+			...prev,
+			...{[entry[0]]: entry[0]}
+		}
+	
+		return {
+			...prev,
+			...{[entry[0]]: entry[1]}
+		}
+	}, {})
 	
 	return [command, args]
 }
