@@ -1,8 +1,12 @@
-const TOKEN = 'NjM4NjgwNjQxNzM4NzY4NDE5.XbhIqw.DP5SLqPksUxRNqMjJhrUxaD5K0o'
 import * as Discord from 'discord.js'
+import {Message} from 'discord.js'
 import chalk from 'chalk'
+import {kanbanGet, KBFParamsGeneric} from './KBF'
+
+const TOKEN = 'NjM4NjgwNjQxNzM4NzY4NDE5.XbhIqw.DP5SLqPksUxRNqMjJhrUxaD5K0o'
 
 const log = console.log
+const debug = (msg: string | number | (string | number)[]) => console.log(chalk.red(`DEBUG[${msg}]`))
 const config = {
 	prefix: '++'
 }
@@ -20,24 +24,12 @@ export const initializeBot = async () => {
 		log(chalk.yellow('DEBUG:' + event))
 	})
 	
-	client.on('message', (message) => {
-			log(chalk.cyanBright(message.content))
-			
-			if (message.author.bot) return
-			if (message.content.indexOf(config.prefix) !== 0) return
-			
-			const args = message.content.slice(config.prefix.length).trim().split(/ +/g)
-			const command = args[0] !== '' ? args.shift()!.toLowerCase() : 'default'
-			
-			console.log(args, command)
-			message.reply([command, args])
-		}
+	client.on('message', (message) => commandHandler(message)
 	)
 	
 	await client.login(TOKEN)
 	// return messages
 }
-
 
 initializeBot()
 	.then((data) => {
@@ -45,3 +37,36 @@ initializeBot()
 		// process.exit()
 	})
 	.catch((err) => log(chalk.red(err)))
+
+interface Commands {
+	[key: string]: (params: KBFParamsGeneric) => {}
+}
+
+const commands: Commands = {
+	'fetchTasks': ({columnId}) => kanbanGet('tasks', {columnId})
+}
+
+const commandHandler = (message: Message) => {
+	const res = getParams(message)
+	if (!res) return
+	const [command, args] = res
+	debug(command)
+	debug(args)
+	
+	
+}
+
+const getParams = (message: Message) => {
+	
+	if (message.author.bot) return
+	if (message.content.indexOf(config.prefix) !== 0) return
+	
+	const argstr = message.content.slice(config.prefix.length).trim()
+	if (!argstr) return
+	const args = argstr.split(/ +/g)
+	
+	const command = args.shift()
+	if (command === undefined) return
+	
+	return [command, args]
+}
