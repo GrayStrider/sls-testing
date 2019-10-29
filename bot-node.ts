@@ -1,4 +1,4 @@
-const TOKEN = 'NjM4NjgwNjQxNzM4NzY4NDE5.XbhIqw.DP5SLqPksUxRNqMjJhrUxaD5K0o'
+const TOKEN = ''
 import * as Discord from 'discord.js'
 import chalk from 'chalk'
 

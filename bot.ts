@@ -11,7 +11,7 @@ export const sayHelloPost: APIGatewayProxyHandler = async (event) => ({
 	body: JSON.stringify(event.body)
 })
 
-const TOKEN = 'NjM4NjgwNjQxNzM4NzY4NDE5.XbhIqw.DP5SLqPksUxRNqMjJhrUxaD5K0o'
+const TOKEN = 'D5K0o'
 
 export const initializeBot: APIGatewayProxyHandler = async () => {
 	const client = new Discord.Client();
