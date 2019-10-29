@@ -5,9 +5,11 @@
   "main": "handler.js",
   "scripts": {
     "start: offline": "sls offline",
+    "start: ts-node": "ts-node-dev bot-node",
     "deploy": "sls deploy"
   },
   "dependencies": {
+    "discord.js": "^11.5.1",
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
