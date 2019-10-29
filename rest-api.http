@@ -6,3 +6,19 @@ Cache-Control: no-cache
 
 ###
 
+GET http://localhost:3000/hello
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+POST http://localhost:3000/hello
+Content-Type: application/json
+Accept: */*
+Cache-Control: no-cache
+
+{
+  "data": "hello!"
+}
+
+###

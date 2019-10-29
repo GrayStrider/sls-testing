@@ -25,3 +25,15 @@ functions:
       - http:
           path: ping
           method: get
+  botHelloGet:
+    handler: bot.sayHelloGet
+    events:
+      - http:
+          path: hello
+          method: get
+  botHelloPost:
+    handler: bot.sayHelloPost
+    events:
+      - http:
+          path: hello
+          method: post
