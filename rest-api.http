@@ -1,0 +1,8 @@
+GET http://localhost:3000/ping
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-10-30T123445.200.json
+
+###
+
