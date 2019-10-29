@@ -17,8 +17,9 @@
     "ts-loader": "^5.3.3",
     "typescript": "^3.2.4",
     "webpack": "^4.29.0",
-    "serverless-offline": "^6.0.0-alpha.42"
-  },
-  "author": "The serverless webpack authors (https://github.com/elastic-coders/serverless-webpack)",
-  "license": "MIT"
+    "serverless-offline": "^6.0.0-alpha.42",
+    "serverless-plugin-common-excludes": "^3.0.0",
+    "serverless-plugin-include-dependencies": "^4.0.0",
+    "serverless-plugin-package-size": "^1.0.1"
+  }
 }
