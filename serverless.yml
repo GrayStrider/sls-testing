@@ -19,21 +19,31 @@ provider:
   region: eu-central-1
 
 functions:
+
   currentTime:
     handler: handler.hello
     events:
       - http:
           path: ping
           method: get
+
   botHelloGet:
     handler: bot.sayHelloGet
     events:
       - http:
           path: hello
           method: get
+
   botHelloPost:
     handler: bot.sayHelloPost
     events:
       - http:
           path: hello
           method: post
+
+  initializeBot:
+    handler: bot.initializeBot
+    events:
+      - http:
+          path: initialize
+          method: get

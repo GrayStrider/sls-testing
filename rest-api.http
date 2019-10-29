@@ -22,3 +22,10 @@ Cache-Control: no-cache
 }
 
 ###
+
+GET http://localhost:3000/initialize
+Accept: */*
+Cache-Control: no-cache
+
+###
+
