@@ -3,7 +3,7 @@ import {Message} from 'discord.js'
 import chalk from 'chalk'
 import {kanbanGet, KBFParamsGeneric} from './KBF'
 
-const TOKEN = 'NjM4NjgwNjQxNzM4NzY4NDE5.XbhIqw.DP5SLqPksUxRNqMjJhrUxaD5K0o'
+const TOKEN = ''
 
 const log = console.log
 const debug = (msg: string | number | (string | number)[]) => console.log(chalk.red(`DEBUG[${msg}]`))
