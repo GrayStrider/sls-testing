@@ -24,9 +24,27 @@ export const initializeBot = async () => {
 		log(chalk.yellow('DEBUG:' + event))
 	})
 	
-	client.on('message', (message) => commandHandler(message)
+	client.on('message', (message) =>
+		commandHandler(message, commands)
+			.catch((err: Error) => {
+				if (err instanceof ParseError) {
+					message.channel.send('Unknown command.')
+				}
+			})
 	)
 	
+	const commands: Commands = {
+		fetchTasks: async ({columnId}, message) => {
+			const msg = await message.channel.send('Fetching tasks..') as Message
+			const res = await kanbanGet('tasks', {columnId})
+			const {tasks} = res.data[0]
+			await msg.delete()
+			return await message.channel.send(tasks.map((task: any) => `- [ ] ${task.name}`))
+			
+		},
+		default: async (params, message) =>
+			await message.channel.send('Command not found!')
+	}
 	await client.login(TOKEN)
 	// return messages
 }
@@ -38,25 +56,33 @@ initializeBot()
 	})
 	.catch((err) => log(chalk.red(err)))
 
-interface Commands {
-	[key: string]: (params: KBFParamsGeneric) => {}
+type ValidCommands = 'fetchTasks'
+
+type Commands = { [key in ValidCommands | 'default']: (params: KBFParamsGeneric, message: Message) => void }
+
+class ParseError extends Error {
+	constructor() {
+		super()
+		this.name = 'ParseError'
+	}
 }
 
-const commands: Commands = {
-	'fetchTasks': ({columnId}) => kanbanGet('tasks', {columnId})
-}
-
-const commandHandler = (message: Message) => {
+const commandHandler = async (message: Message, commands: Commands) => {
 	const res = getParams(message)
 	if (!res) return
-	const [command, args] = res
-	console.log(command, args)
-
+	const {command, args} = res
+	
+	if (command in commands) {
+		return commands[command](args, message)
+	}
+	
+	throw new ParseError()
 	
 }
 
 const SEPARATOR = '='
-const getParams = (message: Message) => {
+type Command = keyof Commands
+const getParams = (message: Message): undefined | { command: Command, args: KBFParamsGeneric } => {
 	
 	if (message.author.bot) return
 	if (message.content.indexOf(config.prefix) !== 0) return
@@ -65,8 +91,9 @@ const getParams = (message: Message) => {
 	if (!argstr) return
 	const args_array = argstr.split(/ +/g)
 	
-	const command = args_array.shift()
-	if (command === undefined) return
+	const trycommand = args_array.shift()
+	if (trycommand === undefined) return
+	const command = trycommand as Command
 	
 	const args = args_array.reduce((prev, curr) => {
 		const entry = curr.split(SEPARATOR)
@@ -74,12 +101,12 @@ const getParams = (message: Message) => {
 			...prev,
 			...{[entry[0]]: entry[0]}
 		}
-	
+		
 		return {
 			...prev,
 			...{[entry[0]]: entry[1]}
 		}
 	}, {})
 	
-	return [command, args]
+	return {command, args}
 }

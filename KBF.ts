@@ -23,5 +23,5 @@ export const kanbanGet = async (resource: string, params?: KBFParamsGeneric, bas
 // kanbanGet('tasks', {
 // 	columnId: 'kW2QjCrlUgJg'
 // }, key64)
-// 	.then((res) => console.log(res.data))
+// 	.then((res) => console.log(res.data[0].tasks))
 // 	.catch((err) => console.log(err.message))
