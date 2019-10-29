@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+
+    "lib": [
+      "es2017"
+    ],
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "target": "es2017",
+    "outDir": "lib"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}
