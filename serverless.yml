@@ -4,14 +4,10 @@ service: serverless-simple-http-endpoint
 
 frameworkVersion: ">=1.1.0 <2.0.0"
 
-package:
-  excludeDevDependencies: false
-
 plugins:
   - serverless-webpack
   - serverless-plugin-common-excludes
   - serverless-plugin-package-size
-  - serverless-plugin-include-dependencies
   - serverless-offline
 
 custom:
