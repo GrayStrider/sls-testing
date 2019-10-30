@@ -1,0 +1,8 @@
+{
+  "botTriggerPrefix": "++",
+  "argsSeparator": "=",
+  "ignoredErrors": [
+    "Ignored message from bot",
+    "Not a bot command"
+  ]
+}
