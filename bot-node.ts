@@ -1,6 +1,7 @@
 import {Client, Message} from 'discord.js'
 import chalk from 'chalk'
 import {kanbanGet, KBFParamsGeneric} from './KBF'
+
 require('dotenv').config()
 
 const log = console.log
@@ -35,17 +36,18 @@ export const initializeBot = async () => {
 	// 	log(chalk.yellow('DEBUG:' + event))
 	// })
 	
-	client.on('message', (message) =>
-		commandHandler(message, commands)
-			.catch((err) => {
-				if (err instanceof ParseError) {
-					message.channel.send('Unknown command.')
-					throw err
-				}
-				else throw err
-			})
-			.catch((err) => log(chalk.red(err)))
-	)
+	client.on('message', (message) => {
+		try {
+			commandHandler(message, commands)
+		} catch (err) {
+/*			if (err instanceof ParseError) {
+				message.channel.send('Unknown command.')
+				throw err
+			} else throw err*/
+			log(chalk.red(err))
+		}
+	})
+	
 	
 	await client.login(process.env.DISCORD_BOT_API_TOKEN)
 }
@@ -57,14 +59,14 @@ type ValidCommands = 'fetchTasks'
 
 type Commands = { [key in ValidCommands | 'default']: (params: KBFParamsGeneric, message: Message) => void }
 
-class ParseError extends Error {
-	constructor() {
-		super()
-		this.name = 'ParseError'
-	}
-}
+// class ParseError extends Error {
+// 	constructor() {
+// 		super()
+// 		this.name = 'ParseError'
+// 	}
+// }
 
-const commandHandler = async (message: Message, commands: Commands) => {
+const commandHandler = (message: Message, commands: Commands) => {
 	const res = getParams(message)
 	if (!res) return
 	const {command, args} = res
@@ -73,7 +75,7 @@ const commandHandler = async (message: Message, commands: Commands) => {
 		return commands[command](args, message)
 	}
 	
-	throw new ParseError()
+	throw /*new ParseError()*/ 'Unknown command'
 	
 }
 
@@ -86,6 +88,7 @@ const getParams = (message: Message): { command: keyof Commands, args: KBFParams
 	
 	const argstr = message.content.slice(config.prefix.length).trim()
 	if (!argstr) throw 'Empty command.'
+	
 	const args_array = argstr.split(/ +/g)
 	const command = args_array.shift() as keyof Commands
 	
