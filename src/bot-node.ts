@@ -9,15 +9,23 @@ const config = {
 	prefix: '++'
 }
 
+interface Task {
+	name: string
+}
 
 const commands: Commands = {
 	
 	fetchTasks: async ({columnId}, message) => {
-		const msg = await message.channel.send('Fetching tasks..') as Message
-		const res = await kanbanGet('tasks', {columnId})
-		const {tasks} = res.data[0]
-		await msg.delete()
-		return await message.channel.send(tasks.map((task: any) => `- [ ] ${task.name}`))
+
+		const [msg, tasks] = await Promise.all([
+			message.channel.send('Fetching tasks..'),
+			kanbanGet('tasks', {columnId}).then(res => res.data[0].tasks)
+		]) as [Message, Task[]]
+
+		await Promise.all([
+			msg.delete(),
+			message.channel.send(tasks.map(task => `- [ ] ${task.name}`))
+		])
 		
 	},
 	
@@ -36,15 +44,14 @@ export const initializeBot = async () => {
 	// 	log(chalk.yellow('DEBUG:' + event))
 	// })
 	const ignoredErrors = ['Ignored message from bot']
+	
+	
 	client.on('message', (message) => {
 		try {
 			commandHandler(message, commands)
 		} catch (err) {
-/*			if (err instanceof ParseError) {
-				message.channel.send('Unknown command.')
-				throw err
-			} else throw err*/
-			log(chalk.red(err))
+			if (ignoredErrors.includes(err)) {
+			} else log(chalk.red(err))
 		}
 	})
 	
@@ -58,13 +65,6 @@ initializeBot()
 type ValidCommands = 'fetchTasks'
 
 type Commands = { [key in ValidCommands | 'default']: (params: KBFParamsGeneric, message: Message) => void }
-
-// class ParseError extends Error {
-// 	constructor() {
-// 		super()
-// 		this.name = 'ParseError'
-// 	}
-// }
 
 const commandHandler = (message: Message, commands: Commands) => {
 	const res = getParams(message)
