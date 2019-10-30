@@ -21,28 +21,28 @@ provider:
 functions:
 
   currentTime:
-    handler: handler.hello
+    handler: src/handler.hello
     events:
       - http:
           path: ping
           method: get
 
   botHelloGet:
-    handler: bot.sayHelloGet
+    handler: src/bot.sayHelloGet
     events:
       - http:
           path: hello
           method: get
 
   botHelloPost:
-    handler: bot.sayHelloPost
+    handler: src/bot.sayHelloPost
     events:
       - http:
           path: hello
           method: post
 
   initializeBot:
-    handler: bot.initializeBot
+    handler: src/bot.initializeBot
     events:
       - http:
           path: initialize

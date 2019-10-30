@@ -5,7 +5,7 @@
   "main": "handler.js",
   "scripts": {
     "start: offline": "sls offline",
-    "start: ts-node-dev": "ts-node-dev bot-node",
+    "start: ts-node-dev": "ts-node-dev src/bot-node",
     "deploy": "sls deploy"
   },
   "dependencies": {
