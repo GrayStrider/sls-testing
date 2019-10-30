@@ -1,5 +1,7 @@
-import {APIGatewayProxyHandler} from "aws-lambda";
-import * as Discord from 'discord.js'
+import {APIGatewayProxyHandler} from 'aws-lambda'
+import {Client} from 'discord.js'
+
+require('dotenv').config()
 
 export const sayHelloGet: APIGatewayProxyHandler = async () => ({
 	statusCode: 200,
@@ -11,18 +13,17 @@ export const sayHelloPost: APIGatewayProxyHandler = async (event) => ({
 	body: JSON.stringify(event.body)
 })
 
-const TOKEN = ''
 
 export const initializeBot: APIGatewayProxyHandler = async () => {
-	const client = new Discord.Client();
+	const client = new Client()
 	const messages: string[] = []
 	
 	client.on(
 		'debug', (event) =>
 			messages.push(event)
-	);
+	)
 	
-	await client.login(TOKEN);
+	await client.login(process.env.DISCORD_BOT_API_TOKEN)
 	
 	return {
 		statusCode: 200,
