@@ -1,7 +1,7 @@
 import axios from 'axios'
+require('dotenv').config()
 
-const key = '917d43a34d814658933f908901d625a6'
-const key64 = Buffer.from('apiToken:' + key).toString('base64')
+const key64 = Buffer.from('apiToken:' + process.env.KBF_API_TOKEN).toString('base64')
 
 const response = async (base64_credentials: string, resource: string) => {
 

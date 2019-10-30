@@ -1,59 +1,56 @@
-import * as Discord from 'discord.js'
-import {Message} from 'discord.js'
+import {Client, Message} from 'discord.js'
 import chalk from 'chalk'
 import {kanbanGet, KBFParamsGeneric} from './KBF'
-
-const TOKEN = ''
+require('dotenv').config()
 
 const log = console.log
-const debug = (msg: string | number | (string | number)[]) => console.log(chalk.red(`DEBUG[${msg}]`))
 const config = {
 	prefix: '++'
 }
 
+
+const commands: Commands = {
+	
+	fetchTasks: async ({columnId}, message) => {
+		const msg = await message.channel.send('Fetching tasks..') as Message
+		const res = await kanbanGet('tasks', {columnId})
+		const {tasks} = res.data[0]
+		await msg.delete()
+		return await message.channel.send(tasks.map((task: any) => `- [ ] ${task.name}`))
+		
+	},
+	
+	default: async (params, message) =>
+		await message.channel.send('Command not found!')
+}
+
 export const initializeBot = async () => {
-	const client = new Discord.Client()
-	const messages: string[] = []
+	const client = new Client()
 	
 	client.on('ready', () =>
 		log('Ready!')
 	)
 	
-	client.on('debug', (event) => {
-		messages.push(event)
-		log(chalk.yellow('DEBUG:' + event))
-	})
+	// client.on('debug', (event) => {
+	// 	log(chalk.yellow('DEBUG:' + event))
+	// })
 	
 	client.on('message', (message) =>
 		commandHandler(message, commands)
-			.catch((err: Error) => {
+			.catch((err) => {
 				if (err instanceof ParseError) {
 					message.channel.send('Unknown command.')
+					throw err
 				}
+				else throw err
 			})
+			.catch((err) => log(chalk.red(err)))
 	)
 	
-	const commands: Commands = {
-		fetchTasks: async ({columnId}, message) => {
-			const msg = await message.channel.send('Fetching tasks..') as Message
-			const res = await kanbanGet('tasks', {columnId})
-			const {tasks} = res.data[0]
-			await msg.delete()
-			return await message.channel.send(tasks.map((task: any) => `- [ ] ${task.name}`))
-			
-		},
-		default: async (params, message) =>
-			await message.channel.send('Command not found!')
-	}
-	await client.login(TOKEN)
-	// return messages
+	await client.login(process.env.DISCORD_BOT_API_TOKEN)
 }
 
 initializeBot()
-	.then((data) => {
-		log(data)
-		// process.exit()
-	})
 	.catch((err) => log(chalk.red(err)))
 
 type ValidCommands = 'fetchTasks'
@@ -81,19 +78,16 @@ const commandHandler = async (message: Message, commands: Commands) => {
 }
 
 const SEPARATOR = '='
-type Command = keyof Commands
-const getParams = (message: Message): undefined | { command: Command, args: KBFParamsGeneric } => {
+
+const getParams = (message: Message): { command: keyof Commands, args: KBFParamsGeneric } => {
 	
-	if (message.author.bot) return
-	if (message.content.indexOf(config.prefix) !== 0) return
+	if (message.author.bot) throw 'Ignored message from bot'
+	if (message.content.indexOf(config.prefix) !== 0) throw 'Not a bot command'
 	
 	const argstr = message.content.slice(config.prefix.length).trim()
-	if (!argstr) return
+	if (!argstr) throw 'Empty command.'
 	const args_array = argstr.split(/ +/g)
-	
-	const trycommand = args_array.shift()
-	if (trycommand === undefined) return
-	const command = trycommand as Command
+	const command = args_array.shift() as keyof Commands
 	
 	const args = args_array.reduce((prev, curr) => {
 		const entry = curr.split(SEPARATOR)
