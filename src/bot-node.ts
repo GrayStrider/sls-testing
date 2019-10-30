@@ -35,7 +35,7 @@ export const initializeBot = async () => {
 	// client.on('debug', (event) => {
 	// 	log(chalk.yellow('DEBUG:' + event))
 	// })
-	
+	const ignoredErrors = ['Ignored message from bot']
 	client.on('message', (message) => {
 		try {
 			commandHandler(message, commands)
