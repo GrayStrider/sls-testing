@@ -1,8 +1,8 @@
-import {commandHandler} from './lib/commandHandler'
 import {Client} from 'discord.js'
 import chalk from 'chalk'
 import {commands} from '../config/commands'
 import * as config from '../config/settings.json'
+import {commandHandler} from './lib/commandHandler'
 
 require('dotenv').config()
 
@@ -14,11 +14,11 @@ export const initializeBot = async () => {
 	client.on('ready', () => log('Ready!'))
 	
 	client.on('message', (message) => {
-
-			commandHandler(message, commands)
-				.catch((err) => {
-					if (!config.ignoredErrors.includes(err)) message.channel.send(err)
-				})
+		
+		commandHandler(message, commands)
+			.catch((err) => {
+				if (!config.ignoredErrors.includes(err)) message.channel.send(err)
+			})
 	})
 	
 	
