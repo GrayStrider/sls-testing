@@ -2,15 +2,11 @@ import {Message} from 'discord.js'
 import {Commands} from '../../types/kanbanflow'
 import {paramResolver} from './paramResolver'
 
-export const commandHandler = (message: Message, commands: Commands) => {
-	const res = paramResolver(message)
-	if (!res) return
-	const {command, args} = res
+export const commandHandler = async (message: Message, commands: Commands) => {
+	const {command, args} = paramResolver(message)
 	
-	if (command in commands) {
-		return commands[command](args, message)
-	}
-	
-	throw 'Unknown command.'
+	return (command in commands)
+		? commands[command](args, message)
+		: commands.fallback(args, message)
 	
 }

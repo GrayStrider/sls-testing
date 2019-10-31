@@ -14,11 +14,11 @@ export const initializeBot = async () => {
 	client.on('ready', () => log('Ready!'))
 	
 	client.on('message', (message) => {
-		try {
+
 			commandHandler(message, commands)
-		} catch (err) {
-			if (!config.ignoredErrors.includes(err)) message.channel.send(err)
-		}
+				.catch((err) => {
+					if (!config.ignoredErrors.includes(err)) message.channel.send(err)
+				})
 	})
 	
 	
