@@ -5,6 +5,6 @@ export interface Task {
 }
 
 type ValidCommands = 'fetchTasks'
-export type Commands = { [key in ValidCommands]: Command; } & { fallback: Command; }
+export type Commands = { [key in ValidCommands]: Command; }
 export type KBFParamsGeneric = { [key: string]: string }
-export type Command = (params: KBFParamsGeneric, message: Message) => void
+export type Command = (message: Message, params?: KBFParamsGeneric) => void

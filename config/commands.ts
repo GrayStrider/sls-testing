@@ -1,14 +1,14 @@
-import {Command, Commands, Task} from '../types/kanbanflow'
-import {kanbanGet} from '../api/KBF'
 import {Message} from 'discord.js'
+import {kanbanGet} from '../api/KBF'
+import {Command, Commands, Task} from '../types/kanbanflow'
 
-const fetchTasks: Command = async ({columnId}, message) => {
-	
+const fetchTasks: Command = async (message, params) => {
 	const [msg, tasks] = await Promise.all([
 		message.channel.send('Fetching tasks..'),
-		kanbanGet('tasks', {columnId}).then(res => res.data[0].tasks)
+		kanbanGet('tasks', params).then(res => res.data[0].tasks)
 			.catch(reason => message.channel.send('Error while calling KBF API: ' + reason))
 	]) as [Message, Task[]]
+	if (!tasks.length) throw 'No tasks fetched with these parameters.'
 	
 	await Promise.all([
 		msg.delete(),
@@ -16,13 +16,7 @@ const fetchTasks: Command = async ({columnId}, message) => {
 	])
 	
 }
-const fallback: Command = async (params, message) =>
-	await message.channel.send(
-		`Command not found! Arguments passed:
-		${JSON.stringify(params, null, 3)}`
-	)
 
 export const commands: Commands = {
 	fetchTasks,
-	fallback
 }

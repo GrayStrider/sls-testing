@@ -1,6 +1,6 @@
 import {Message} from 'discord.js'
-import {Commands, KBFParamsGeneric} from '../../types/kanbanflow'
 import * as config from '../../config/settings.json'
+import {Commands} from '../../types/kanbanflow'
 
 export const commandHandler = async (message: Message, commands: Commands) => {
 	
@@ -12,8 +12,9 @@ export const commandHandler = async (message: Message, commands: Commands) => {
 	
 	const args_array = argstr.split(/ +/g)
 	const command = args_array.shift() as keyof Commands
+	if (!(command in commands)) throw `Command "${command}" not found.`
 	
-	const args: KBFParamsGeneric = args_array.reduce((acc, curr) => {
+	const args = args_array.length === 0 ? undefined : args_array.reduce((acc, curr) => {
 		const entry = curr.split(config.argsSeparator)
 		if (entry.length !== 2) return {
 			...acc,
@@ -26,7 +27,5 @@ export const commandHandler = async (message: Message, commands: Commands) => {
 		}
 	}, {})
 	
-	return (command in commands)
-		? commands[command](args, message)
-		: commands.fallback(args, message)
+	return commands[command](message, args)
 }
