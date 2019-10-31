@@ -13,16 +13,16 @@ export const commandHandler = async (message: Message, commands: Commands) => {
 	const args_array = argstr.split(/ +/g)
 	const command = args_array.shift() as keyof Commands
 	
-	const args: KBFParamsGeneric = args_array.reduce((prev, curr) => {
+	const args: KBFParamsGeneric = args_array.reduce((acc, curr) => {
 		const entry = curr.split(config.argsSeparator)
 		if (entry.length !== 2) return {
-			...prev,
-			...{[entry[0]]: entry[0]}
+			...acc,
+			[entry[0]]: entry[0]
 		}
 		
 		return {
-			...prev,
-			...{[entry[0]]: entry[1]}
+			...acc,
+			[entry[0]]: entry[1]
 		}
 	}, {})
 	
