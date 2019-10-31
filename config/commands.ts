@@ -17,7 +17,10 @@ const fetchTasks: Command = async ({columnId}, message) => {
 	
 }
 const fallback: Command = async (params, message) =>
-	await message.channel.send('Command not found!')
+	await message.channel.send(
+		`Command not found! Arguments passed:
+		${JSON.stringify(params, null, 3)}`
+	)
 
 export const commands: Commands = {
 	fetchTasks,
