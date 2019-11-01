@@ -1,4 +1,4 @@
-import {Board, Comment, OtherTaskProperties, Task, Tasks} from '../../types/kanbanflow'
+import {Board, OtherTaskProperties, RequestProps, Task, Tasks} from '../../types/kanbanflow'
 import {kanbanGet} from './KBF'
 import {getTasksByColumnAndSwimlaneParams, getTasksByColumnParams} from './types/requests'
 
@@ -40,10 +40,6 @@ const getTaskByID = (id: Task['_id']) =>
 const getTaskDetailsById = <T extends RequestProps, K extends keyof T>
 	(id: Task['_id'], fetchOnlyProperty: K) =>
 		kanbanGet<T[K]>(`tasks/${id}/${fetchOnlyProperty}`)
-
-interface RequestProps {
-	comments: Comment[]
-}
 
 const getSubtasksByTaskID = (id: Task['_id']) =>
 	kanbanGet<Task>(`tasks/${id}/subtasks`)

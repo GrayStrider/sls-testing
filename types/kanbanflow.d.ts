@@ -34,8 +34,19 @@ interface Collaborator {
 
 }
 
+
+export interface RequestProps {
+	comments: Comment[]
+	labels: Label[]
+	dates: Date[]
+	collaborators: Collaborator[]
+}
+
 interface Comment {
-	content: string
+	_id: string
+	text: string
+	authorUserId: string
+	createdTimestamp: string
 }
 
 export interface Task {
@@ -105,8 +116,8 @@ interface TimeEntry {
 interface Relation {
 
 }
-
 type Status = 'active'
+
 type DateType = 'dueDate'
 
 interface Date {
@@ -117,14 +128,14 @@ interface Date {
 	dueTimestampLocal?: string
 
 }
-
 type ValidCommands = 'fetchTasks'
+
 export type Commands = { [key in ValidCommands]: Command; }
-
 export type KBFParamsGeneric = { [key: string]: string }
+
+
+
 export type Command = (message: Message, params?: KBFParamsGeneric) => void
-
-
 
 interface Column {
 	name: string
@@ -143,7 +154,6 @@ interface Swimlane {
 	name: string
 	uniqueId: string
 }
-
 export interface Board {
 	name: string
 	columns: Column[]

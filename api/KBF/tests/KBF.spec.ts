@@ -1,4 +1,4 @@
-import {Board, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
+import {Board, Collaborator, Comment, Date, Label, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {
 	getAllTasksFromBoard,
 	getBoard,
@@ -7,6 +7,7 @@ import {
 	getTasksByColumn,
 	getTasksByColumnAndSwimlane
 } from '../requests'
+
 
 const taskMaxFeatures: Task = {
 	_id: 'hia9zFNn',
@@ -51,6 +52,7 @@ const taskMaxFeatures: Task = {
 		}
 	]
 }
+
 const taskMinFeatues: Task = {
 	_id: 'hh6RHiEw',
 	name: 'test_task',
@@ -61,6 +63,7 @@ const taskMinFeatues: Task = {
 	totalSecondsEstimate: 0,
 	swimlaneId: 'V8pP3mn7NcSG',
 }
+const maxFeatuesId = 'hia9zFNn'
 
 it('should fetch valid board data', async () => {
 	const exp: Board = {
@@ -109,9 +112,9 @@ it('should fetch valid board data', async () => {
 
 it('should return a single task by id', async () => {
 	
-	const act1: Task = await getTaskByID('hia9zFNn')
+	const act1: Task = await getTaskByID(maxFeatuesId)
 	expect(act1).toMatchObject(taskMaxFeatures)
-	const act2:Task = await getTaskByID('hh6RHiEw')
+	const act2: Task = await getTaskByID('hh6RHiEw')
 	expect(act2).toMatchObject(taskMinFeatues)
 })
 
@@ -174,19 +177,75 @@ it('should return all tasks on the board', async () => {
 	expect(res).toMatchSnapshot()
 })
 
-it('should fetch specific task properties, ' +
-	'already present on full task fetch', async () => {
-	const res = await getTaskDetailsById('hia9zFNn', 'comments')
-	console.log(res.map((comment) => comment.content))
-	
-	
+describe('should fetch specific task properties', () => {
+	it('should fetch comments', async () => {
+		const act = await getTaskDetailsById(maxFeatuesId, 'comments')
+		const exp: Comment = {
+			_id: 'm8q9JVny',
+			text: 'test',
+			authorUserId: '5b2a3ad796a22ce0d687f7f8181232b1',
+			createdTimestamp: '2019-11-01T04:21:31.774Z'
+		}
+		
+		expect(act).toMatch(
+			expect.arrayContaining([
+				expect.objectContaining(exp)
+			])
+		)
+		
 	})
-
-
-
-it('should fetch specific task properties, ' +
-	'NOT present on full task fetch', async () => {
 	
-	
+	it('should fetch labels', async () => {
+		const act = await getTaskDetailsById(maxFeatuesId, 'labels')
+		const exp: Label = {
+			name: 'test_label',
+			pinned: false
+		}
+		expect(act).toMatch(
+			expect.arrayContaining([
+				expect.objectContaining(exp)
+			
+			])
+		)
+		
 	})
-
+	
+	
+	it('should fetch dates', async () => {
+		const act = await getTaskDetailsById(maxFeatuesId, 'dates')
+		const exp: Date = {
+			targetColumnId: 'UsbzO1HUaPhw',
+			status: 'active',
+			dateType: 'dueDate',
+			dueTimestamp: '2019-11-01T06:00:00.000Z',
+			dueTimestampLocal: '2019-11-01T17:00:00+11:00'
+		}
+		expect(act).toMatch(
+			expect.arrayContaining([
+				expect.objectContaining(exp)
+			
+			])
+		)
+	})
+	
+	it('should fetch collaborators', async () => {
+		const act = await getTaskDetailsById(maxFeatuesId, 'collaborators')
+		const exp: Collaborator = {} //todo
+		expect(act).toHaveLength(0)
+		
+	})
+	
+	it('should fetch attachments', async () => {
+		
+		const act = await getTaskDetailsById(maxFeatuesId, 'labels')
+		const exp/*: Date*/ = {}
+		expect(act).toMatch(
+			expect.arrayContaining([
+				expect.objectContaining(exp)
+			
+			])
+		)
+	})
+	
+	
+})

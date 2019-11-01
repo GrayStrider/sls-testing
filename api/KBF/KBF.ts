@@ -1,5 +1,4 @@
 import axios from 'axios'
-import {Res, KBF2} from '../../types/kanbanflow'
 import {getTasksByColumnParams} from './types/requests'
 
 require('dotenv').config()
