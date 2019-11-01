@@ -1,5 +1,6 @@
 import {Attachment, Board, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {createOrModifyTask, getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane, postParams} from '../requests'
+import {postParams} from '../KBF'
+import {createOrModifyTask, getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
 
 it('should fetch valid board data', async () => {

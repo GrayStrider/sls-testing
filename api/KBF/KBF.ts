@@ -1,6 +1,5 @@
 import axios from 'axios'
-import {Task} from '../../types/kanbanflow'
-import {postParams} from './requests'
+import {Task, TaskNumber} from '../../types/kanbanflow'
 import {getTasksByColumnParams} from './types/requests'
 
 require('dotenv').config()
@@ -26,19 +25,25 @@ export const kanbanGet =
 		return res.data
 	}
 
+export type postReply = { taskId: string, taskNumber: TaskNumber }
 
-export const kanbanPost =
-	async <T, K = postParams>(params: postParams, taskId?: Task['_id'], apiKey = genAPIkey(token)) => {
-		const res = await axios.post<T>(
-			`https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`,
-			params,
-			{
-				headers: {
-					'Authorization': `Basic ${apiKey}`,
-					'Content-type': 'application/json'
-					
-				}
-			})
-		return res.data
-		
-	}
+export type postParams =
+	Omit<Task, '_id' | 'totalSecondsSpent' | 'color' | 'description'>
+	& Partial<Pick<Task, 'color' | 'description'>>
+
+export async function kanbanPost(params: postParams, apiKey?: string): Promise<postReply>
+
+export async function kanbanPost<T, K = postParams>(params: postParams, taskId?: Task['_id'], apiKey = genAPIkey(token)) {
+	const res = await axios.post<T>(
+		`https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`,
+		params,
+		{
+			headers: {
+				'Authorization': `Basic ${apiKey}`,
+				'Content-type': 'application/json'
+				
+			}
+		})
+	return res.data
+	
+}

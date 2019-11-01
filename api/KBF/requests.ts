@@ -1,5 +1,5 @@
-import {Board, RequestProps, Task, Tasks, TaskNumber} from '../../types/kanbanflow'
-import {kanbanGet, kanbanPost} from './KBF'
+import {Board, RequestProps, Task, Tasks} from '../../types/kanbanflow'
+import {kanbanGet, kanbanPost, postParams} from './KBF'
 import {getTasksByColumnAndSwimlaneParams, getTasksByColumnParams} from './types/requests'
 
 const getBoard = () =>
@@ -24,17 +24,13 @@ const getAllTasksFromBoard = () =>
 ////
 
 
-export type postParams =
-	Omit<Task, '_id' | 'totalSecondsSpent' | 'color' | 'description'>
-	& Partial<Pick<Task, 'color' | 'description'>>
-
 const createTask =
 	(params: postParams) =>
-	kanbanPost<{taskId: string, taskNumber: TaskNumber}>(params)
+	kanbanPost(params)
 
 const createOrModifyTask =
 	(params: postParams, taskId?: Task['_id']) =>
-	kanbanPost<{taskId: string, taskNumber: TaskNumber}>(params, taskId)
+	kanbanPost(params, taskId)
 
 
 export {
