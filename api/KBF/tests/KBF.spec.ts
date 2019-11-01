@@ -2,12 +2,10 @@ import {Board, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {
 	getAllTasksFromBoard,
 	getBoard,
-	getTaskDataByID,
+	getTaskByID,
+	getTaskDetailsById,
 	getTasksByColumn,
-	getTasksByColumnAndSwimlane,
-	specificPropertiesAlreadyPresentOnFullTaskFetch,
-	specificPropertiesNotPresentOnFullTaskFetch,
-	TSpecificProperties
+	getTasksByColumnAndSwimlane
 } from '../requests'
 
 const taskMaxFeatures: Task = {
@@ -111,9 +109,9 @@ it('should fetch valid board data', async () => {
 
 it('should return a single task by id', async () => {
 	
-	const act1: Task = await getTaskDataByID('hia9zFNn')
+	const act1: Task = await getTaskByID('hia9zFNn')
 	expect(act1).toMatchObject(taskMaxFeatures)
-	const act2: Task = await getTaskDataByID('hh6RHiEw')
+	const act2:Task = await getTaskByID('hh6RHiEw')
 	expect(act2).toMatchObject(taskMinFeatues)
 })
 
@@ -171,7 +169,6 @@ it('should return all tasks in the column', async () => {
 })
 
 it('should return all tasks on the board', async () => {
-	const exp = {}
 	const res = await getAllTasksFromBoard()
 	// snapshot will do, since all types are tested in previous tests.
 	expect(res).toMatchSnapshot()
@@ -179,29 +176,17 @@ it('should return all tasks on the board', async () => {
 
 it('should fetch specific task properties, ' +
 	'already present on full task fetch', async () => {
-	for (const property of specificPropertiesAlreadyPresentOnFullTaskFetch) {
-		const act = await getTaskDataByID('hia9zFNn', property)
-		expect(act).toMatchSnapshot()
-	}
-}, 9000)
+	const res = await getTaskDetailsById('hia9zFNn', 'comments')
+	console.log(res.map((comment) => comment.content))
+	
+	
+	})
 
 
 
 it('should fetch specific task properties, ' +
 	'NOT present on full task fetch', async () => {
-	const exp: { [key in TSpecificProperties]: any } = {
-		'time-entries': '',
-		attachments: '',
-		collaborators: [],
-		comments: '',
-		relations: ''
-	}
 	
-	for (const property of specificPropertiesNotPresentOnFullTaskFetch) {
-		
-		const act = await getTaskDataByID('hia9zFNn', property)
-		
-		expect(act).toMatchSnapshot()
-	}
-}, 9000)
+	
+	})
 

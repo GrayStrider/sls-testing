@@ -1,9 +1,10 @@
-import {Board, Task, Tasks} from '../../types/kanbanflow'
+import {Board, Comment, OtherTaskProperties, Task, Tasks} from '../../types/kanbanflow'
 import {kanbanGet} from './KBF'
 import {getTasksByColumnAndSwimlaneParams, getTasksByColumnParams} from './types/requests'
 
 const getBoard = () =>
-	kanbanGet<Board>({resource: 'board'})
+	kanbanGet<Board>('board')
+
 
 export const specificPropertiesAlreadyPresentOnFullTaskFetch = [
 	'subtasks',
@@ -19,36 +20,51 @@ export const specificPropertiesNotPresentOnFullTaskFetch = [
 	'relations'
 ] as const
 
-type TSpecificPropertiesDuplicated = typeof specificPropertiesAlreadyPresentOnFullTaskFetch[number];
 
-export type TSpecificProperties = typeof specificPropertiesNotPresentOnFullTaskFetch[number];
+export type TSpecificPropertiesDuplicated =
+// Task['subTasks'] | Task['labels'] | Task['dates']
+	Pick<Task, 'subTasks' | 'labels' | 'dates'>
 
-const getTaskDataByID =
-	(id: Task['_id'], fetchOnlyProperty?:
-		TSpecificPropertiesDuplicated
-		| TSpecificProperties
-	) =>
-		fetchOnlyProperty
-			? kanbanGet<Task>({resource: `tasks/${id}/${fetchOnlyProperty}`})
-			: kanbanGet<Task>({resource: `tasks/${id}`})
+
+export type TSpecificProperties = Pick<Task, 'collaborators'>
+	& OtherTaskProperties
+// Task['collaborators'] |
+// OtherTaskProperties['comments'] |
+// OtherTaskProperties['attachments']
+//
+
+
+const getTaskByID = (id: Task['_id']) =>
+	kanbanGet<Task>(`tasks/${id}`)
+
+const getTaskDetailsById = <T extends RequestProps, K extends keyof T>
+	(id: Task['_id'], fetchOnlyProperty: K) =>
+		kanbanGet<T[K]>(`tasks/${id}/${fetchOnlyProperty}`)
+
+interface RequestProps {
+	comments: Comment[]
+}
 
 const getSubtasksByTaskID = (id: Task['_id']) =>
-	kanbanGet<Task>({resource: `tasks/${id}/subtasks`})
+	kanbanGet<Task>(`tasks/${id}/subtasks`)
 
 const getTasksByColumn = (params: getTasksByColumnParams) =>
-	kanbanGet<Tasks>({resource: 'tasks', params: params})
+	kanbanGet<Tasks>('tasks', params)
 
 const getTasksByColumnAndSwimlane = (params: getTasksByColumnAndSwimlaneParams) =>
-	kanbanGet<Tasks>({resource: 'tasks', params: params})
+	kanbanGet<Tasks>('tasks', params)
 
 const getAllTasksFromBoard = () =>
-	kanbanGet<Tasks>({resource: 'tasks'})
+	kanbanGet<Tasks>('tasks')
 
 export {
 	getBoard,
-	getTaskDataByID,
+	getTaskByID,
 	getTasksByColumn,
 	getTasksByColumnAndSwimlane,
 	getAllTasksFromBoard,
-	getSubtasksByTaskID
+	getSubtasksByTaskID,
+	getTaskDetailsById
 }
+
+const test = () => kanbanGet('tasks')

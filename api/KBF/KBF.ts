@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {KBF, KBFParamsGeneric} from '../../types/kanbanflow'
+import {Res, KBF2} from '../../types/kanbanflow'
 import {getTasksByColumnParams} from './types/requests'
 
 require('dotenv').config()
@@ -17,17 +17,22 @@ interface KanbanGetParams {
 	apiKey?: ReturnType<typeof genAPIkey>;
 }
 
-export const kanbanGet = async <T extends KBF>({resource, params, apiKey = genAPIkey(token)}: KanbanGetParams) => {
-	const res = await axios.get<T>(`https://kanbanflow.com/api/v1/${resource}`,
-		{
-			headers: {
-				'Authorization': `Basic ${apiKey}`
-			},
-			params
-		})
-	
-	return res.data
-}
+export const kanbanGet =
+	async <T>(resource: string,
+	                      params?: getTasksByColumnParams,
+	                      apiKey = genAPIkey(token)
+	) => {
+	const test = 'board'
+		const res = await axios.get<T>(`https://kanbanflow.com/api/v1/${resource}`,
+			{
+				headers: {
+					'Authorization': `Basic ${apiKey}`
+				},
+				params
+			})
+		
+		return res.data
+	}
 
 // times(1, async () =>
 // 		await kanbanGet('boards'),

@@ -1,4 +1,4 @@
-import {Message} from 'discord.js'
+import {Attachment, Message} from 'discord.js'
 
 export type Tasks = TasksBySwimlane[]
 
@@ -32,6 +32,10 @@ interface Label {
 
 interface Collaborator {
 
+}
+
+interface Comment {
+	content: string
 }
 
 export interface Task {
@@ -73,6 +77,35 @@ export interface Task {
 	
 }
 
+export interface OtherTaskProperties {
+	comments: Comment[]
+	attachments: Attachment[]
+	'time-entries': TimeEntry[]
+	relations: Relation[]
+	
+}
+
+export type KBF =
+	Column | Board | Task | Tasks |
+	Task['subTasks'] |
+	Task ['collaborators'] |
+	OtherTaskProperties['comments'] |
+	OtherTaskProperties['attachments'] |
+	OtherTaskProperties['time-entries'] |
+	OtherTaskProperties['relations']
+
+interface Attachment {
+
+}
+
+interface TimeEntry {
+
+}
+
+interface Relation {
+
+}
+
 type Status = 'active'
 type DateType = 'dueDate'
 
@@ -87,10 +120,11 @@ interface Date {
 
 type ValidCommands = 'fetchTasks'
 export type Commands = { [key in ValidCommands]: Command; }
+
 export type KBFParamsGeneric = { [key: string]: string }
 export type Command = (message: Message, params?: KBFParamsGeneric) => void
 
-export type KBF = Column | Board | Tasks | Task
+
 
 interface Column {
 	name: string
