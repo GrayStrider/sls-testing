@@ -1,5 +1,5 @@
 import {Message} from 'discord.js'
-import {kanbanGet} from '../api/KBF'
+import {kanbanGet} from '../api/KBF/KBF'
 import {Command, Commands, Task} from '../types/kanbanflow'
 
 const fetchTasks: Command = async (message, params) => {

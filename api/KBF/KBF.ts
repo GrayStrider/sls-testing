@@ -1,5 +1,6 @@
+import {times} from 'async'
 import axios from 'axios'
-import {KBFParamsGeneric} from '../types/kanbanflow'
+import {KBFParamsGeneric} from '../../types/kanbanflow'
 
 require('dotenv').config()
 const token = process.env.KBF_API_TOKEN
@@ -17,3 +18,9 @@ export const kanbanGet = async (resource: string, params?: KBFParamsGeneric, api
 			},
 			params
 		})
+
+times(10, async () =>
+		await kanbanGet('tasks'),
+	(err, results) =>
+		console.log(results!.map((result: any) =>
+			result.data[0].columnName)))
