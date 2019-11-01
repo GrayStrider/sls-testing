@@ -2,11 +2,12 @@ import {Board, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {
 	getAllTasksFromBoard,
 	getBoard,
-	getSubtasksByTaskID,
 	getTaskDataByID,
 	getTasksByColumn,
 	getTasksByColumnAndSwimlane,
-	specificProperties
+	specificPropertiesAlreadyPresentOnFullTaskFetch,
+	specificPropertiesNotPresentOnFullTaskFetch,
+	TSpecificProperties
 } from '../requests'
 
 const taskMaxFeatures: Task = {
@@ -176,9 +177,31 @@ it('should return all tasks on the board', async () => {
 	expect(res).toMatchSnapshot()
 })
 
-it('should fetch specific task property', async () => {
-	for (const property of specificProperties) {
+it('should fetch specific task properties, ' +
+	'already present on full task fetch', async () => {
+	for (const property of specificPropertiesAlreadyPresentOnFullTaskFetch) {
 		const act = await getTaskDataByID('hia9zFNn', property)
 		expect(act).toMatchSnapshot()
 	}
 }, 9000)
+
+
+
+it('should fetch specific task properties, ' +
+	'NOT present on full task fetch', async () => {
+	const exp: { [key in TSpecificProperties]: any } = {
+		'time-entries': '',
+		attachments: '',
+		collaborators: [],
+		comments: '',
+		relations: ''
+	}
+	
+	for (const property of specificPropertiesNotPresentOnFullTaskFetch) {
+		
+		const act = await getTaskDataByID('hia9zFNn', property)
+		
+		expect(act).toMatchSnapshot()
+	}
+}, 9000)
+

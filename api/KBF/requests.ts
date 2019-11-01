@@ -5,22 +5,31 @@ import {getTasksByColumnAndSwimlaneParams, getTasksByColumnParams} from './types
 const getBoard = () =>
 	kanbanGet<Board>({resource: 'board'})
 
-export const specificProperties = [
+export const specificPropertiesAlreadyPresentOnFullTaskFetch = [
 	'subtasks',
 	'labels',
-	'dates',
+	'dates'
+] as const
+
+export const specificPropertiesNotPresentOnFullTaskFetch = [
 	'collaborators',
 	'comments',
 	'attachments',
 	'time-entries',
 	'relations'
 ] as const
-type TSpecificProperties = typeof specificProperties[number];
+
+type TSpecificPropertiesDuplicated = typeof specificPropertiesAlreadyPresentOnFullTaskFetch[number];
+
+export type TSpecificProperties = typeof specificPropertiesNotPresentOnFullTaskFetch[number];
 
 const getTaskDataByID =
-	(id: Task['_id'], fetchOnlyProperty?: TSpecificProperties) =>
+	(id: Task['_id'], fetchOnlyProperty?:
+		TSpecificPropertiesDuplicated
+		| TSpecificProperties
+	) =>
 		fetchOnlyProperty
-			? kanbanGet<Task>({resource: `tasks/${id}/${ fetchOnlyProperty}`})
+			? kanbanGet<Task>({resource: `tasks/${id}/${fetchOnlyProperty}`})
 			: kanbanGet<Task>({resource: `tasks/${id}`})
 
 const getSubtasksByTaskID = (id: Task['_id']) =>
