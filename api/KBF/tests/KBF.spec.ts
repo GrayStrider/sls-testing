@@ -173,35 +173,165 @@ describe('should fetch specific task properties', () => {
 	})
 })
 
-it('should add new task', async () => {
-	const minFeaturesParams: postParams = {
-		name: 'TESTMIN',
-		columnId: testColumnId,
-		swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
-	}
-	const maxFeaturesParams: postParams = {
-		name: 'TESTMAX',
-		columnId: testColumnId,
-		swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
-		// position: 'bottom', //todo position and grouping data are mutually exclusive
-		color: 'green',
-		description: 'TEST',
-		number: {prefix: 'TESTPREFIX', value: 99},
-		responsibleUserId: testUserId,
-		totalSecondsEstimate: 60,
-		pointsEstimate: 100.99,
-		groupingDate: null,
-		dates: [testDate],
-		subTasks: [testSubtasks[0]],
-		labels: [testLabel],
-		collaborators: []
-	}
+
+describe('should create tasks/properties', () => {
+	it('should add new task', async () => {
+		const minFeaturesParams: postParams = {
+			name: 'TESTMIN',
+			columnId: testColumnId,
+			swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
+		}
+		const maxFeaturesParams: postParams = {
+			name: 'TESTMAX',
+			columnId: testColumnId,
+			swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
+			// position: 'bottom', //todo position and grouping data are mutually exclusive
+			color: 'green',
+			description: 'TEST',
+			number: {prefix: 'TESTPREFIX', value: 99},
+			responsibleUserId: testUserId,
+			totalSecondsEstimate: 60,
+			pointsEstimate: 100.99,
+			groupingDate: null,
+			dates: [testDate],
+			subTasks: [testSubtasks[0]],
+			labels: [testLabel],
+			collaborators: []
+		}
+		
+		const actMin = await createTask(minFeaturesParams)
+		expect(actMin).toHaveProperty(['taskId'])
+		expect(actMin).toHaveProperty(['taskNumber'])
+		
+		const actMax = await createTask(maxFeaturesParams)
+		expect(actMax).toHaveProperty(['taskId'])
+		expect(actMax).toHaveProperty(['taskNumber'])
+	})
+	it('should create subtask', async () => {
+		
+		
+		throw 'not implemented'
+	})
+	it('should create label', async () => {
+		throw 'not implemented'
+	})
+	it('should create / update date', async () => {
+		throw 'not implemented'
+	})
+	it('should create add collaborator', async () => {
+		throw 'not implemented'
+	})
+	it('should create comment', async () => {
+		throw 'not implemented'
+	})
+	it('should add attachment', async () => {
+		throw 'not implemented'
+	})
+	it('should add manual time entry', async () => {
+		throw 'not implemented'
+	})
 	
-	const actMin = await createTask(minFeaturesParams)
-	expect(actMin).toHaveProperty(['taskId'])
-	expect(actMin).toHaveProperty(['taskNumber'])
+})
+
+describe('should update entries', () => {
+	it('should update subtasks', async () => {
+		throw 'not implemented'
+	})
+	it('should update label', async () => {
+		throw 'not implemented'
+	})
+	it('should create / update date', async () => {
+		throw 'not implemented'
+	})
+	it('update comment', async () => {
+		throw 'not implemented'
+	})
+	it('should update manual time entry', async () => {
+		throw 'not implemented'
+	})
 	
-	const actMax = await createTask(maxFeaturesParams)
-	expect(actMax).toHaveProperty(['taskId'])
-	expect(actMax).toHaveProperty(['taskNumber'])
+})
+
+describe('should delete entries', () => {
+	it('should delete subtask', async () => {
+		
+		
+		throw 'not implemented'
+	})
+	it('should delete label', async () => {
+		throw 'not implemented'
+	})
+	it('should delete date', async () => {
+		throw 'not implemented'
+	})
+	it('should delete collaborator', async () => {
+		throw 'not implemented'
+	})
+	it('should delete comment', async () => {
+		throw 'not implemented'
+	})
+	it('should delete attachment', async () => {
+		throw 'not implemented'
+	})
+	it('should delete manual time entry', async () => {
+		throw 'not implemented'
+	})
+	
+})
+
+describe('should manage time entries', () => {
+	it('should get stoppwatch entries', async () => {
+		
+		
+		throw 'not implemented'
+	})
+	it('should delete stopwatch entries', async () => {
+		throw 'not implemented'
+	})
+	it('should get pomodory entries', async () => {
+		throw 'not implemented'
+	})
+	it('should delete pomodoro entries', async () => {
+		throw 'not implemented'
+	})
+	it('should get manual entries', async () => {
+		throw 'not implemented'
+	})
+	it('should delete manual entries', async () => {
+		throw 'not implemented'
+	})
+	
+})
+
+it('should get users', async () => {
+  
+  throw 'Not implemented'
+});
+it('should get events', async () => {
+  
+  throw 'Not implemented'
+});
+
+describe('should manage webhooks', () => {
+	it('should create webhook', async () => {
+	  
+	  throw 'Not implemented'
+	});
+	it('should update webhook', async () => {
+		
+		throw 'Not implemented'
+	});
+	it('should delete webhoook', async () => {
+		
+		throw 'Not implemented'
+	});
+	it('should recieve events', async () => {
+		
+		throw 'Not implemented'
+	});
+	it('should verify signature', async () => {
+		
+		throw 'Not implemented'
+	});
+	
 })
