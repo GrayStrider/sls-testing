@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {KBF, KBFParamsGeneric} from '../../types/kanbanflow'
+import {getTasksByColumnParams} from './requests'
 
 require('dotenv').config()
 const token = process.env.KBF_TESTING_API_TOKEN
@@ -9,7 +10,14 @@ const genAPIkey = (token?: string) => {
 	return Buffer.from('apiToken:' + token).toString('base64')
 }
 
-export const kanbanGet = async <T extends KBF>(resource: string, params?: KBFParamsGeneric, apiKey: string = genAPIkey(token)) => {
+
+interface KanbanGetParams {
+	resource: string;
+	params?: getTasksByColumnParams;
+	apiKey?: ReturnType<typeof genAPIkey>;
+}
+
+export const kanbanGet = async <T extends KBF>({resource, params, apiKey = genAPIkey(token)}: KanbanGetParams) => {
 	const res = await axios.get<T>(`https://kanbanflow.com/api/v1/${resource}`,
 		{
 			headers: {

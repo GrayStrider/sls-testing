@@ -1,8 +1,18 @@
 import {Message} from 'discord.js'
 
-export type Tasks = Task[]
+export type Tasks = TasksBySwimlane[]
 
+export interface TasksBySwimlane {
+	columnId: string
+	columnName: string
+	tasksLimited: boolean
+	tasks: Task[]
+	swimlaneId: string
+	swimlaneName: string
+	
+}
 export interface Task {
+	_id: string
 	name: string
 }
 
@@ -11,7 +21,7 @@ export type Commands = { [key in ValidCommands]: Command; }
 export type KBFParamsGeneric = { [key: string]: string }
 export type Command = (message: Message, params?: KBFParamsGeneric) => void
 
-export type KBF = Column | Board | Tasks
+export type KBF = Column | Board | Tasks | Task
 
 interface Column {
 	name: string

@@ -1,5 +1,5 @@
 import {AxiosResponse} from 'axios'
-import {getBoard} from '../getBoard'
+import {getBoard, getTaskByID, getTasksByColumn} from '../requests'
 
 let res2: AxiosResponse
 
@@ -18,4 +18,16 @@ it('should fetch valid board data', async () => {
 		.name).toBe('A'
 	)
 	
+})
+
+it('should return all tasks in the column', async () => {
+	const res = await getTasksByColumn({columnId: 'Uqsc6jy2Cbl9'})
+	expect(res.length).toBe(2) //2 swimlanes!
+	expect(res.find((res) => res.columnId === 'Uqsc6jy2Cbl9')!
+		.columnName).toBe('TEST')
+})
+
+it('should return a single task by id', async () => {
+	const res = await getTaskByID('hh6RHiEw')
+	expect(res.name).toBe('test_task')
 })
