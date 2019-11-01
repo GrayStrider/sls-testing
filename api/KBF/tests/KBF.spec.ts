@@ -3,68 +3,97 @@ import {createTaskParams, kanbanPost} from '../KBF'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
 
-it('should fetch valid board data', async () => {
-	const exp: Board = {
-		_id: 'is54ys',
-		name: 'GH> KBF TS',
-		columns: [
+
+describe('should fetch data', () => {
+	it('should fetch valid board data', async () => {
+		const exp: Board = {
+			_id: 'is54ys',
+			name: 'GH> KBF TS',
+			columns: [
+				{
+					uniqueId: 'UpPKrbzD8yBN',
+					name: 'To-do'
+				},
+				{
+					uniqueId: 'Uqsc6jy2Cbl9',
+					name: 'TEST'
+				},
+				{
+					uniqueId: 'Urnu6XfQg3yU',
+					name: 'Awaiting review'
+				},
+				{
+					uniqueId: 'UsbzO1HUaPhw',
+					name: 'Done'
+				}
+			],
+			colors: [
+				{
+					name: 'White',
+					description: 'desc',
+					value: 'white'
+				}
+			],
+			swimlanes: [
+				{
+					uniqueId: 'V8pP3mn7NcSG',
+					name: 'A'
+				},
+				{
+					uniqueId: 'V9eKUkwDY8Vz',
+					name: 'B'
+				}
+			]
+		}
+		const res = await getBoard()
+		expect(res).toMatchObject(exp)
+		
+	})
+	it('should return a single task by id', async () => {
+		
+		const act1: Task = await getTaskByID(maxFeatuesId)
+		expect(act1).toMatchObject(taskMaxFeatures)
+		const act2: Task = await getTaskByID('hh6RHiEw')
+		expect(act2).toMatchObject(taskMinFeatues)
+	})
+	it('should return all tasks in the column', async () => {
+		const expTasks: Tasks = [
 			{
-				uniqueId: 'UpPKrbzD8yBN',
-				name: 'To-do'
+				columnId: 'Uqsc6jy2Cbl9',
+				columnName: 'TEST',
+				tasksLimited: false,
+				tasks: [taskMinFeatues, taskMaxFeatures],
+				swimlaneId: 'V8pP3mn7NcSG',
+				swimlaneName: 'A',
 			},
 			{
-				uniqueId: 'Uqsc6jy2Cbl9',
-				name: 'TEST'
-			},
-			{
-				uniqueId: 'Urnu6XfQg3yU',
-				name: 'Awaiting review'
-			},
-			{
-				uniqueId: 'UsbzO1HUaPhw',
-				name: 'Done'
-			}
-		],
-		colors: [
-			{
-				name: 'White',
-				description: 'desc',
-				value: 'white'
-			}
-		],
-		swimlanes: [
-			{
-				uniqueId: 'V8pP3mn7NcSG',
-				name: 'A'
-			},
-			{
-				uniqueId: 'V9eKUkwDY8Vz',
-				name: 'B'
+				columnId: 'Uqsc6jy2Cbl9',
+				columnName: 'TEST',
+				tasksLimited: false,
+				tasks: [],
+				swimlaneId: 'V9eKUkwDY8Vz',
+				swimlaneName: 'B'
 			}
 		]
-	}
-	const res = await getBoard()
-	expect(res).toMatchObject(exp)
-	
-})
-it('should return a single task by id', async () => {
-	
-	const act1: Task = await getTaskByID(maxFeatuesId)
-	expect(act1).toMatchObject(taskMaxFeatures)
-	const act2: Task = await getTaskByID('hh6RHiEw')
-	expect(act2).toMatchObject(taskMinFeatues)
-})
-it('should return all tasks in the column', async () => {
-	const expTasks: Tasks = [
-		{
-			columnId: 'Uqsc6jy2Cbl9',
-			columnName: 'TEST',
-			tasksLimited: false,
-			tasks: [taskMinFeatues, taskMaxFeatures],
-			swimlaneId: 'V8pP3mn7NcSG',
-			swimlaneName: 'A',
-		},
-		{
+		const exp = expect.arrayContaining([
+			expect.objectContaining(expTasks[0]),
+			expect.objectContaining(expTasks[1])
+		])
+		
+		const actById: Tasks =
+			await getTasksByColumn({columnId: 'Uqsc6jy2Cbl9'})
+		expect(actById[0]).toMatchObject(expTasks[0])
+		expect(actById[1]).toMatchObject(expTasks[1])
+		
+		const actByName: Tasks =
+			await getTasksByColumn({columnName: 'TEST'})
+		expect(actByName).toEqual(exp)
+		
+		const actByIndex: Tasks =
+			await getTasksByColumn({columnIndex: 1})
+		expect(actByIndex).toEqual(exp)
+		
+		const expTaskByColumnAndSwimlane: TasksBySwimlane = {
 			columnId: 'Uqsc6jy2Cbl9',
 			columnName: 'TEST',
 			tasksLimited: false,
@@ -72,45 +101,19 @@ it('should return all tasks in the column', async () => {
 			swimlaneId: 'V9eKUkwDY8Vz',
 			swimlaneName: 'B'
 		}
-	]
-	const exp = expect.arrayContaining([
-		expect.objectContaining(expTasks[0]),
-		expect.objectContaining(expTasks[1])
-	])
-	
-	const actById: Tasks =
-		await getTasksByColumn({columnId: 'Uqsc6jy2Cbl9'})
-	expect(actById[0]).toMatchObject(expTasks[0])
-	expect(actById[1]).toMatchObject(expTasks[1])
-	
-	const actByName: Tasks =
-		await getTasksByColumn({columnName: 'TEST'})
-	expect(actByName).toEqual(exp)
-	
-	const actByIndex: Tasks =
-		await getTasksByColumn({columnIndex: 1})
-	expect(actByIndex).toEqual(exp)
-	
-	const expTaskByColumnAndSwimlane: TasksBySwimlane = {
-		columnId: 'Uqsc6jy2Cbl9',
-		columnName: 'TEST',
-		tasksLimited: false,
-		tasks: [],
-		swimlaneId: 'V9eKUkwDY8Vz',
-		swimlaneName: 'B'
-	}
-	const expByColumnAndSwimlane = expect.arrayContaining([
-		expect.objectContaining(expTaskByColumnAndSwimlane)
-	])
-	const actByColumnAndSwimlane =
-		await getTasksByColumnAndSwimlane({columnIndex: 1, swimlaneId: 'V9eKUkwDY8Vz'})
-	expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
-	
-})
-it('should return all tasks on the board', async () => {
-	const res = await getAllTasksFromBoard()
-	// snapshot will do, since all types are tested in previous tests.
-	expect(res).toMatchSnapshot()
+		const expByColumnAndSwimlane = expect.arrayContaining([
+			expect.objectContaining(expTaskByColumnAndSwimlane)
+		])
+		const actByColumnAndSwimlane =
+			await getTasksByColumnAndSwimlane({columnIndex: 1, swimlaneId: 'V9eKUkwDY8Vz'})
+		expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
+		
+	})
+	it('should return all tasks on the board', async () => {
+		const res = await getAllTasksFromBoard()
+		// snapshot will do, since all types are tested in previous tests.
+		expect(res).toMatchSnapshot()
+	})
 })
 describe('should fetch specific task properties', () => {
 	it('should fetch comments', async () => {
@@ -173,8 +176,6 @@ describe('should fetch specific task properties', () => {
 		expect(act[0]).toMatchObject(exp)
 	})
 })
-
-
 describe('should create / update / delete tasks/properties', () => {
 	let testTempTaskId: Task['_id']
 	
@@ -202,11 +203,11 @@ describe('should create / update / delete tasks/properties', () => {
 			collaborators: []
 		}
 		
-		const actMin = await kanbanPost(minFeaturesParams)
+		const actMin = await kanbanPost({params: minFeaturesParams})
 		expect(actMin).toHaveProperty(['taskId'])
 		expect(actMin).toHaveProperty(['taskNumber'])
 		
-		const actMax = await kanbanPost(maxFeaturesParams)
+		const actMax = await kanbanPost({params: maxFeaturesParams})
 		expect(actMax).toHaveProperty(['taskId'])
 		expect(actMax).toHaveProperty(['taskNumber'])
 		
@@ -217,7 +218,7 @@ describe('should create / update / delete tasks/properties', () => {
 			name: 'CHANGED'
 			// todo
 		}
-		await kanbanPost(changes, testTempTaskId)
+		await kanbanPost({params: changes, taskId: testTempTaskId})
 		const result = await getTaskByID(testTempTaskId)
 		expect(result.name).toBe(changes.name)
 	})
@@ -228,9 +229,15 @@ describe('should create / update / delete tasks/properties', () => {
 describe('should create / update / delete tasks / properties', () => {
 	
 	it('should create subtask', async () => {
+		const act = await kanbanPost({
+			addParam: 'subtask', taskId: maxFeatuesId, params: {
+				name: 'ADDED SUBTASK',
+				finished: false,
+				userId: testUserId,
+			}
+		})
+		expect(act).toHaveProperty('insertIndex')
 		
-		
-		throw 'not implemented'
 	})
 	it('should update subtasks', async () => {
 		throw 'not implemented'
@@ -305,8 +312,6 @@ describe('should create / update / delete tasks / properties', () => {
 		throw 'not implemented'
 	})
 })
-
-
 describe('should manage time entries', () => {
 	
 	it('should get stoppwatch entries', async () => {

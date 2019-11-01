@@ -26,11 +26,11 @@ const getAllTasksFromBoard = () =>
 
 const createTask =
 	(params: createTaskParams) =>
-	kanbanPost(params)
+	kanbanPost({params: params})
 
 const createOrModifyTask =
 	(params: createTaskParams, taskId?: Task['_id']) =>
-	kanbanPost(params, taskId)
+	kanbanPost({params: params, apiKey: taskId})
 
 
 export {

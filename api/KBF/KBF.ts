@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Task, TaskNumber} from '../../types/kanbanflow'
+import {SubTask, Task, TaskNumber} from '../../types/kanbanflow'
 import {getTasksByColumnParams} from './types/requests'
 
 require('dotenv').config()
@@ -31,22 +31,55 @@ export type createTaskParams =
 	Omit<Task, '_id' | 'totalSecondsSpent' | 'color' | 'description'>
 	& Partial<Pick<Task, 'color' | 'description'>>
 
+interface KanbanPost {
+	apiKey?: string;
+}
+
+interface ModifyTask {
+	taskId: Task['_id'];
+	
+}
+
+
+
+
+interface CreateParams extends KanbanPost {
+	params: createTaskParams;
+}
+
+interface UpdateParams extends KanbanPost, ModifyTask {
+	params: Partial<createTaskParams>;
+}
+
+interface AddSubtaskParams extends KanbanPost, ModifyTask {
+	params: Pick<SubTask, 'name'> & Partial<SubTask>;
+	addParam: 'subtask'
+}
+
+type AddPropTypes = 'subtask'
+export const AddParams: {[key in AddPropTypes]: string} = {
+	 subtask: 'subtasks'
+}
+
+
+interface ImplementationParams extends KanbanPost {
+	params: createTaskParams | Partial<createTaskParams>;
+	taskId?: Task['_id'];
+	addParam?: string
+}
+
 // create
-export async function kanbanPost(
-	params: createTaskParams, apiKey?: string): Promise<postReply>
-
+export async function kanbanPost({params, apiKey}: CreateParams): Promise<postReply>
 // update
-export async function kanbanPost(
-	params: Partial<createTaskParams>, taskId: Task['_id'], apiKey?: string): Promise<void>
+export async function kanbanPost({params, taskId, apiKey}: UpdateParams): Promise<void>
+// add subtask
+export async function kanbanPost({params, taskId, apiKey, addParam}: AddSubtaskParams): Promise<{ insertIndex: number }>
 
-// add property
-export async function kanbanPost(
-	params: Partial<createTaskParams>, taskId: Task['_id'], apiKey?: string): Promise<void>
 
 // implementation
-export async function kanbanPost(
-	params: createTaskParams | Partial<createTaskParams>, taskId?: Task['_id'], apiKey = genAPIkey(token)) {
-	const url = `https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`
+export async function kanbanPost({params, taskId, addParam, apiKey = genAPIkey(token)}: ImplementationParams) {
+	let url = `https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`
+	addParam === 'subtask' ? url +=  '/' + AddParams['subtask'] : url
 	const res = await axios.post(
 		url,
 		params,
