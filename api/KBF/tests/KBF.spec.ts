@@ -1,6 +1,6 @@
 import {Attachment, Board, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {postParams} from '../KBF'
-import {createOrModifyTask, getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
+import {createTaskParams, kanbanPost} from '../KBF'
+import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
 
 it('should fetch valid board data', async () => {
@@ -179,12 +179,12 @@ describe('should create / update / delete tasks/properties', () => {
 	let testTempTaskId: Task['_id']
 	
 	it('should add new task', async () => {
-		const minFeaturesParams: postParams = {
+		const minFeaturesParams: createTaskParams = {
 			name: 'TESTMIN',
 			columnId: testColumnId,
 			swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
 		}
-		const maxFeaturesParams: postParams = {
+		const maxFeaturesParams: createTaskParams = {
 			name: 'TESTMAX',
 			columnId: testColumnId,
 			swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
@@ -202,21 +202,30 @@ describe('should create / update / delete tasks/properties', () => {
 			collaborators: []
 		}
 		
-		const actMin = await createOrModifyTask(minFeaturesParams)
+		const actMin = await kanbanPost(minFeaturesParams)
 		expect(actMin).toHaveProperty(['taskId'])
 		expect(actMin).toHaveProperty(['taskNumber'])
 		
-		const actMax = await createOrModifyTask(maxFeaturesParams)
+		const actMax = await kanbanPost(maxFeaturesParams)
 		expect(actMax).toHaveProperty(['taskId'])
 		expect(actMax).toHaveProperty(['taskNumber'])
 		
 		testTempTaskId = actMax.taskId
 	})
 	it('should update task', async () => {
-		// const changes: postParams =
-		// const dispatchChanges = await createOrModifyTask()
+		const changes: Partial<createTaskParams> = {
+			name: 'CHANGED'
+			// todo
+		}
+		await kanbanPost(changes, testTempTaskId)
+		const result = await getTaskByID(testTempTaskId)
+		expect(result.name).toBe(changes.name)
 	})
 	// delete all tasks as latest test
+	
+})
+
+describe('should create / update / delete tasks / properties', () => {
 	
 	it('should create subtask', async () => {
 		
@@ -295,7 +304,6 @@ describe('should create / update / delete tasks/properties', () => {
 	it('should delete task', async () => {
 		throw 'not implemented'
 	})
-	
 })
 
 

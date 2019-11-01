@@ -27,15 +27,28 @@ export const kanbanGet =
 
 export type postReply = { taskId: string, taskNumber: TaskNumber }
 
-export type postParams =
+export type createTaskParams =
 	Omit<Task, '_id' | 'totalSecondsSpent' | 'color' | 'description'>
 	& Partial<Pick<Task, 'color' | 'description'>>
 
-export async function kanbanPost(params: postParams, apiKey?: string): Promise<postReply>
+// create
+export async function kanbanPost(
+	params: createTaskParams, apiKey?: string): Promise<postReply>
 
-export async function kanbanPost<T, K = postParams>(params: postParams, taskId?: Task['_id'], apiKey = genAPIkey(token)) {
-	const res = await axios.post<T>(
-		`https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`,
+// update
+export async function kanbanPost(
+	params: Partial<createTaskParams>, taskId: Task['_id'], apiKey?: string): Promise<void>
+
+// add property
+export async function kanbanPost(
+	params: Partial<createTaskParams>, taskId: Task['_id'], apiKey?: string): Promise<void>
+
+// implementation
+export async function kanbanPost(
+	params: createTaskParams | Partial<createTaskParams>, taskId?: Task['_id'], apiKey = genAPIkey(token)) {
+	const url = `https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`
+	const res = await axios.post(
+		url,
 		params,
 		{
 			headers: {
