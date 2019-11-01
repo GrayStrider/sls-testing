@@ -31,7 +31,7 @@ interface Label {
 }
 
 interface Collaborator {
-
+	userId: string
 }
 
 
@@ -40,6 +40,8 @@ export interface RequestProps {
 	labels: Label[]
 	dates: Date[]
 	collaborators: Collaborator[]
+	attachments: Attachment[]
+	subtasks: SubTask[]
 }
 
 interface Comment {
@@ -69,7 +71,7 @@ export interface Task {
 	// The ID of the swimlane the task is in. Only included if the board has swimlanes.
 	swimlaneId?: string
 	// The index of the task in the column/swimlane or date group. Only included if includePosition is set. Note: The index is zero-based.
-	position?: number
+	position?: number | 'top' | 'bottom'
 	// The task number consists of an integer value and an optional prefix.
 	number?: TaskNumber
 	// The responsible of the task.
@@ -77,7 +79,7 @@ export interface Task {
 	// The dates of the task. Only included if there are any items.
 	dates?: Date[]
 	// Only included if the column the task is in is date grouped. Format is YYYY-MM-DD. Example: 2015-12-31.
-	groupingDate?: string
+	groupingDate?: string | null | ''
 	// The subtasks of the task. Only included if there are any items.
 	subTasks?: SubTask[]
 	// The labels of the task. Only included if there are any items
@@ -96,17 +98,17 @@ export interface OtherTaskProperties {
 	
 }
 
-export type KBF =
-	Column | Board | Task | Tasks |
-	Task['subTasks'] |
-	Task ['collaborators'] |
-	OtherTaskProperties['comments'] |
-	OtherTaskProperties['attachments'] |
-	OtherTaskProperties['time-entries'] |
-	OtherTaskProperties['relations']
 
 interface Attachment {
-
+	_id: string
+	provider: string,
+	name: string,
+	size: number,
+	mimeType: string,
+	link: string,
+	linkExpiresTimestamp: string,
+	createdTimestamp: string,
+	createdByFullName: string
 }
 
 interface TimeEntry {

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {postParams} from './requests'
 import {getTasksByColumnParams} from './types/requests'
 
 require('dotenv').config()
@@ -9,19 +10,10 @@ const genAPIkey = (token?: string) => {
 	return Buffer.from('apiToken:' + token).toString('base64')
 }
 
-
-interface KanbanGetParams {
-	resource: string;
-	params?: getTasksByColumnParams;
-	apiKey?: ReturnType<typeof genAPIkey>;
-}
-
 export const kanbanGet =
 	async <T>(resource: string,
-	                      params?: getTasksByColumnParams,
-	                      apiKey = genAPIkey(token)
-	) => {
-	const test = 'board'
+	          params?: getTasksByColumnParams,
+	          apiKey = genAPIkey(token)) => {
 		const res = await axios.get<T>(`https://kanbanflow.com/api/v1/${resource}`,
 			{
 				headers: {
@@ -33,12 +25,17 @@ export const kanbanGet =
 		return res.data
 	}
 
-// times(1, async () =>
-// 		await kanbanGet('boards'),
-// 	(err, results) =>
-// 		console.log(results!.map((result: any) =>
-// 			result, err)))
-
-// kanbanGet('tasks')
-// 	.then(console.log)
-// 	.catch(console.log)
+export const kanbanPost =
+	async <T>(params: postParams, apiKey = genAPIkey(token)) => {
+		const res = await axios.post<T>(`https://kanbanflow.com/api/v1/tasks`,
+			params,
+			{
+				headers: {
+					'Authorization': `Basic ${apiKey}`,
+					'Content-type': 'application/json'
+					
+				}
+			})
+		return res.data
+		
+	}

@@ -1,69 +1,6 @@
-import {Board, Collaborator, Comment, Date, Label, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {
-	getAllTasksFromBoard,
-	getBoard,
-	getTaskByID,
-	getTaskDetailsById,
-	getTasksByColumn,
-	getTasksByColumnAndSwimlane
-} from '../requests'
-
-
-const taskMaxFeatures: Task = {
-	_id: 'hia9zFNn',
-	name: 'test_task3',
-	description: 'test',
-	color: 'white',
-	columnId: 'Uqsc6jy2Cbl9',
-	totalSecondsSpent: 60,
-	totalSecondsEstimate: 60,
-	number: {
-		prefix: 'PRE-',
-		value: 1
-	},
-	responsibleUserId: '5b2a3ad796a22ce0d687f7f8181232b1',
-	swimlaneId: 'V8pP3mn7NcSG',
-	dates: [
-		{
-			targetColumnId: 'UsbzO1HUaPhw',
-			status: 'active',
-			dateType: 'dueDate',
-			dueTimestamp: '2019-11-01T06:00:00.000Z',
-			dueTimestampLocal: '2019-11-01T17:00:00+11:00'
-		}
-	],
-	subTasks: [
-		{
-			name: 'sub1',
-			finished: false,
-			dueDateTimestamp: '2019-11-01T06:00:00.000Z',
-			dueDateTimestampLocal: '2019-11-01T17:00:00+11:00'
-		},
-		{
-			name: 'sub2',
-			finished: false,
-			userId: '5b2a3ad796a22ce0d687f7f8181232b1'
-		}
-	],
-	labels: [
-		{
-			name: 'test_label',
-			pinned: false
-		}
-	]
-}
-
-const taskMinFeatues: Task = {
-	_id: 'hh6RHiEw',
-	name: 'test_task',
-	description: '',
-	color: 'white',
-	columnId: 'Uqsc6jy2Cbl9',
-	totalSecondsSpent: 0,
-	totalSecondsEstimate: 0,
-	swimlaneId: 'V8pP3mn7NcSG',
-}
-const maxFeatuesId = 'hia9zFNn'
+import {Attachment, Board, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
+import {createTask, getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane, postParams} from '../requests'
+import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
 
 it('should fetch valid board data', async () => {
 	const exp: Board = {
@@ -109,7 +46,6 @@ it('should fetch valid board data', async () => {
 	expect(res).toMatchObject(exp)
 	
 })
-
 it('should return a single task by id', async () => {
 	
 	const act1: Task = await getTaskByID(maxFeatuesId)
@@ -117,7 +53,6 @@ it('should return a single task by id', async () => {
 	const act2: Task = await getTaskByID('hh6RHiEw')
 	expect(act2).toMatchObject(taskMinFeatues)
 })
-
 it('should return all tasks in the column', async () => {
 	const expTasks: Tasks = [
 		{
@@ -126,7 +61,7 @@ it('should return all tasks in the column', async () => {
 			tasksLimited: false,
 			tasks: [taskMinFeatues, taskMaxFeatures],
 			swimlaneId: 'V8pP3mn7NcSG',
-			swimlaneName: 'A'
+			swimlaneName: 'A',
 		},
 		{
 			columnId: 'Uqsc6jy2Cbl9',
@@ -144,7 +79,8 @@ it('should return all tasks in the column', async () => {
 	
 	const actById: Tasks =
 		await getTasksByColumn({columnId: 'Uqsc6jy2Cbl9'})
-	expect(actById).toEqual(exp)
+	expect(actById[0]).toMatchObject(expTasks[0])
+	expect(actById[1]).toMatchObject(expTasks[1])
 	
 	const actByName: Tasks =
 		await getTasksByColumn({columnName: 'TEST'})
@@ -170,16 +106,15 @@ it('should return all tasks in the column', async () => {
 	expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
 	
 })
-
 it('should return all tasks on the board', async () => {
 	const res = await getAllTasksFromBoard()
 	// snapshot will do, since all types are tested in previous tests.
 	expect(res).toMatchSnapshot()
 })
-
 describe('should fetch specific task properties', () => {
 	it('should fetch comments', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'comments')
+		
 		const exp: Comment = {
 			_id: 'm8q9JVny',
 			text: 'test',
@@ -187,65 +122,86 @@ describe('should fetch specific task properties', () => {
 			createdTimestamp: '2019-11-01T04:21:31.774Z'
 		}
 		
-		expect(act).toMatch(
+		expect(act).toMatchObject(
 			expect.arrayContaining([
 				expect.objectContaining(exp)
 			])
 		)
 		
 	})
-	
 	it('should fetch labels', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'labels')
-		const exp: Label = {
-			name: 'test_label',
-			pinned: false
-		}
-		expect(act).toMatch(
+		
+		expect(act).toMatchObject(
 			expect.arrayContaining([
-				expect.objectContaining(exp)
-			
+				expect.objectContaining(testLabel)
 			])
 		)
-		
 	})
-	
-	
 	it('should fetch dates', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'dates')
-		const exp: Date = {
-			targetColumnId: 'UsbzO1HUaPhw',
-			status: 'active',
-			dateType: 'dueDate',
-			dueTimestamp: '2019-11-01T06:00:00.000Z',
-			dueTimestampLocal: '2019-11-01T17:00:00+11:00'
-		}
-		expect(act).toMatch(
+		expect(act).toMatchObject(
 			expect.arrayContaining([
-				expect.objectContaining(exp)
+				expect.objectContaining(testDate)
 			
 			])
 		)
 	})
-	
+	it('should fetch subtasks', async () => {
+		const act = await getTaskDetailsById(maxFeatuesId, 'subtasks')
+		expect(act[0]).toMatchObject(testSubtasks[0])
+		expect(act[1]).toMatchObject(testSubtasks[1])
+	})
 	it('should fetch collaborators', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'collaborators')
-		const exp: Collaborator = {} //todo
+		
 		expect(act).toHaveLength(0)
 		
 	})
-	
 	it('should fetch attachments', async () => {
-		
-		const act = await getTaskDetailsById(maxFeatuesId, 'labels')
-		const exp/*: Date*/ = {}
-		expect(act).toMatch(
-			expect.arrayContaining([
-				expect.objectContaining(exp)
-			
-			])
-		)
+		const act = await getTaskDetailsById(maxFeatuesId, 'attachments')
+		const exp: Partial<Attachment> = {
+			// some properties omitted
+			_id: 'QWAnJzYkcu7x',
+			provider: 'KanbanFlow',
+			name: 'wuauserv.reg.jpg',
+			size: 6990,
+			mimeType: 'image/jpeg',
+			createdTimestamp: '2019-11-01T12:37:01.675Z',
+		}
+		expect(act[0]).toMatchObject(exp)
 	})
+})
+
+it('should add new task', async () => {
+	const minFeaturesParams: postParams = {
+		name: 'TESTMIN',
+		columnId: testColumnId,
+		swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
+	}
+	const maxFeaturesParams: postParams = {
+		name: 'TESTMAX',
+		columnId: testColumnId,
+		swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
+		// position: 'bottom', //todo position and grouping data are mutually exclusive
+		color: 'green',
+		description: 'TEST',
+		number: {prefix: 'TESTPREFIX', value: 99},
+		responsibleUserId: testUserId,
+		totalSecondsEstimate: 60,
+		pointsEstimate: 100.99,
+		groupingDate: null,
+		dates: [testDate],
+		subTasks: [testSubtasks[0]],
+		labels: [testLabel],
+		collaborators: []
+	}
 	
+	const actMin = await createTask(minFeaturesParams)
+	expect(actMin).toHaveProperty(['taskId'])
+	expect(actMin).toHaveProperty(['taskNumber'])
 	
+	const actMax = await createTask(maxFeaturesParams)
+	expect(actMax).toHaveProperty(['taskId'])
+	expect(actMax).toHaveProperty(['taskNumber'])
 })
