@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {Task} from '../../types/kanbanflow'
 import {postParams} from './requests'
 import {getTasksByColumnParams} from './types/requests'
 
@@ -25,9 +26,11 @@ export const kanbanGet =
 		return res.data
 	}
 
+
 export const kanbanPost =
-	async <T>(params: postParams, apiKey = genAPIkey(token)) => {
-		const res = await axios.post<T>(`https://kanbanflow.com/api/v1/tasks`,
+	async <T, K = postParams>(params: postParams, taskId?: Task['_id'], apiKey = genAPIkey(token)) => {
+		const res = await axios.post<T>(
+			`https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`,
 			params,
 			{
 				headers: {

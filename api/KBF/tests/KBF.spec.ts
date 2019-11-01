@@ -1,5 +1,5 @@
 import {Attachment, Board, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {createTask, getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane, postParams} from '../requests'
+import {createOrModifyTask, getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane, postParams} from '../requests'
 import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
 
 it('should fetch valid board data', async () => {
@@ -174,7 +174,9 @@ describe('should fetch specific task properties', () => {
 })
 
 
-describe('should create tasks/properties', () => {
+describe('should create / update / delete tasks/properties', () => {
+	let testTempTaskId: Task['_id']
+	
 	it('should add new task', async () => {
 		const minFeaturesParams: postParams = {
 			name: 'TESTMIN',
@@ -199,102 +201,121 @@ describe('should create tasks/properties', () => {
 			collaborators: []
 		}
 		
-		const actMin = await createTask(minFeaturesParams)
+		const actMin = await createOrModifyTask(minFeaturesParams)
 		expect(actMin).toHaveProperty(['taskId'])
 		expect(actMin).toHaveProperty(['taskNumber'])
 		
-		const actMax = await createTask(maxFeaturesParams)
+		const actMax = await createOrModifyTask(maxFeaturesParams)
 		expect(actMax).toHaveProperty(['taskId'])
 		expect(actMax).toHaveProperty(['taskNumber'])
+		
+		testTempTaskId = actMax.taskId
 	})
+	it('should update task', async () => {
+		// const changes: postParams =
+		// const dispatchChanges = await createOrModifyTask()
+	})
+	// delete all tasks as latest test
+	
 	it('should create subtask', async () => {
 		
 		
 		throw 'not implemented'
 	})
-	it('should create label', async () => {
-		throw 'not implemented'
-	})
-	it('should create / update date', async () => {
-		throw 'not implemented'
-	})
-	it('should create add collaborator', async () => {
-		throw 'not implemented'
-	})
-	it('should create comment', async () => {
-		throw 'not implemented'
-	})
-	it('should add attachment', async () => {
-		throw 'not implemented'
-	})
-	it('should add manual time entry', async () => {
-		throw 'not implemented'
-	})
-	
-})
-
-describe('should update entries', () => {
 	it('should update subtasks', async () => {
 		throw 'not implemented'
 	})
-	it('should update label', async () => {
-		throw 'not implemented'
-	})
-	it('should create / update date', async () => {
-		throw 'not implemented'
-	})
-	it('update comment', async () => {
-		throw 'not implemented'
-	})
-	it('should update manual time entry', async () => {
-		throw 'not implemented'
-	})
-	
-})
-
-describe('should delete entries', () => {
 	it('should delete subtask', async () => {
 		
 		
 		throw 'not implemented'
 	})
+	
+	
+	it('should create label', async () => {
+		throw 'not implemented'
+	})
+	it('should update label', async () => {
+		throw 'not implemented'
+	})
 	it('should delete label', async () => {
+		throw 'not implemented'
+	})
+	
+	
+	it('should create / update date', async () => {
+		throw 'not implemented'
+	})
+	it('should create / update date', async () => {
 		throw 'not implemented'
 	})
 	it('should delete date', async () => {
 		throw 'not implemented'
 	})
+	
+	
+	it('should create add collaborator', async () => {
+		throw 'not implemented'
+	})
 	it('should delete collaborator', async () => {
+		throw 'not implemented'
+	})
+	
+	
+	it('should create comment', async () => {
+		throw 'not implemented'
+	})
+	it('update comment', async () => {
 		throw 'not implemented'
 	})
 	it('should delete comment', async () => {
 		throw 'not implemented'
 	})
+	
+	
+	it('should add attachment', async () => {
+		throw 'not implemented'
+	})
 	it('should delete attachment', async () => {
+		throw 'not implemented'
+	})
+	
+	
+	it('should add manual time entry', async () => {
+		throw 'not implemented'
+	})
+	it('should update manual time entry', async () => {
 		throw 'not implemented'
 	})
 	it('should delete manual time entry', async () => {
 		throw 'not implemented'
 	})
 	
+	it('should delete task', async () => {
+		throw 'not implemented'
+	})
+	
 })
 
+
 describe('should manage time entries', () => {
+	
 	it('should get stoppwatch entries', async () => {
 		
 		
 		throw 'not implemented'
 	})
+	it('should get manual entries', async () => {
+		throw 'not implemented'
+	})
 	it('should delete stopwatch entries', async () => {
 		throw 'not implemented'
 	})
+	
 	it('should get pomodory entries', async () => {
 		throw 'not implemented'
 	})
 	it('should delete pomodoro entries', async () => {
-		throw 'not implemented'
-	})
-	it('should get manual entries', async () => {
 		throw 'not implemented'
 	})
 	it('should delete manual entries', async () => {
@@ -304,34 +325,34 @@ describe('should manage time entries', () => {
 })
 
 it('should get users', async () => {
-  
-  throw 'Not implemented'
-});
+	
+	throw 'Not implemented'
+})
 it('should get events', async () => {
-  
-  throw 'Not implemented'
-});
+	
+	throw 'Not implemented'
+})
 
 describe('should manage webhooks', () => {
 	it('should create webhook', async () => {
-	  
-	  throw 'Not implemented'
-	});
+		
+		throw 'Not implemented'
+	})
 	it('should update webhook', async () => {
 		
 		throw 'Not implemented'
-	});
+	})
 	it('should delete webhoook', async () => {
 		
 		throw 'Not implemented'
-	});
+	})
 	it('should recieve events', async () => {
 		
 		throw 'Not implemented'
-	});
+	})
 	it('should verify signature', async () => {
 		
 		throw 'Not implemented'
-	});
+	})
 	
 })

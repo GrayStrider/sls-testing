@@ -28,8 +28,13 @@ export type postParams =
 	Omit<Task, '_id' | 'totalSecondsSpent' | 'color' | 'description'>
 	& Partial<Pick<Task, 'color' | 'description'>>
 
-const createTask = (params: postParams) =>
+const createTask =
+	(params: postParams) =>
 	kanbanPost<{taskId: string, taskNumber: TaskNumber}>(params)
+
+const createOrModifyTask =
+	(params: postParams, taskId?: Task['_id']) =>
+	kanbanPost<{taskId: string, taskNumber: TaskNumber}>(params, taskId)
 
 
 export {
@@ -39,6 +44,7 @@ export {
 	getTasksByColumnAndSwimlane,
 	getAllTasksFromBoard,
 	createTask,
-	getTaskDetailsById
+	getTaskDetailsById,
+	createOrModifyTask
 }
 
