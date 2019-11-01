@@ -5,8 +5,11 @@
     "lib": [
       "es2017"
     ],
+    "incremental": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
     "moduleResolution": "node",
-//    "sourceMap": true,
     "target": "es2017",
     "outDir": "lib"
   },

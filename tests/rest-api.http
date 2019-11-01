@@ -1,0 +1,31 @@
+GET http://localhost:3000/ping
+Accept: */*
+Cache-Control: no-cache
+
+<> 2019-10-30T123445.200.json
+
+###
+
+GET http://localhost:3000/hello
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+POST http://localhost:3000/hello
+Content-Type: application/json
+Accept: */*
+Cache-Control: no-cache
+
+{
+  "data": "hello!"
+}
+
+###
+
+GET http://localhost:3000/initialize
+Accept: */*
+Cache-Control: no-cache
+
+###
+
