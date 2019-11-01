@@ -230,16 +230,21 @@ describe('should create / update / delete tasks / properties', () => {
 	
 	it('should create subtask', async () => {
 		const act = await kanbanPost({
-			addParam: 'subtask', taskId: maxFeatuesId, params: {
+			addParam: 'subtask', taskId: maxFeatuesId,
+			params: {
 				name: 'ADDED SUBTASK',
 				finished: false,
 				userId: testUserId,
 			}
 		})
 		expect(act).toHaveProperty('insertIndex')
-		
 	})
 	it('should update subtasks', async () => {
+		const act = await kanbanPost({
+			modifyParam: 'subtask',
+			taskId: maxFeatuesId, //todo
+			params: {finished: true}
+		})
 		throw 'not implemented'
 	})
 	it('should delete subtask', async () => {
@@ -312,6 +317,7 @@ describe('should create / update / delete tasks / properties', () => {
 		throw 'not implemented'
 	})
 })
+
 describe('should manage time entries', () => {
 	
 	it('should get stoppwatch entries', async () => {

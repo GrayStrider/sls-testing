@@ -41,8 +41,6 @@ interface ModifyTask {
 }
 
 
-
-
 interface CreateParams extends KanbanPost {
 	params: createTaskParams;
 }
@@ -51,21 +49,29 @@ interface UpdateParams extends KanbanPost, ModifyTask {
 	params: Partial<createTaskParams>;
 }
 
+
+type AddOrModifyPropTypes = 'subtask'
+
+export const AddParams: { [key in AddOrModifyPropTypes]: string } = {
+	subtask: 'subtasks'
+}
+
+
 interface AddSubtaskParams extends KanbanPost, ModifyTask {
 	params: Pick<SubTask, 'name'> & Partial<SubTask>;
 	addParam: 'subtask'
 }
 
-type AddPropTypes = 'subtask'
-export const AddParams: {[key in AddPropTypes]: string} = {
-	 subtask: 'subtasks'
+interface ModifySubtaskParams extends KanbanPost, ModifyTask {
+	params: Partial<SubTask>;
+	modifyParam: AddOrModifyPropTypes
 }
-
 
 interface ImplementationParams extends KanbanPost {
 	params: createTaskParams | Partial<createTaskParams>;
 	taskId?: Task['_id'];
 	addParam?: string
+	modifyParam?: AddOrModifyPropTypes
 }
 
 // create
@@ -74,12 +80,15 @@ export async function kanbanPost({params, apiKey}: CreateParams): Promise<postRe
 export async function kanbanPost({params, taskId, apiKey}: UpdateParams): Promise<void>
 // add subtask
 export async function kanbanPost({params, taskId, apiKey, addParam}: AddSubtaskParams): Promise<{ insertIndex: number }>
+// modify subtask
+export async function kanbanPost({params, taskId, apiKey, modifyParam}: ModifySubtaskParams): Promise<void>
 
 
 // implementation
-export async function kanbanPost({params, taskId, addParam, apiKey = genAPIkey(token)}: ImplementationParams) {
+export async function kanbanPost({params, taskId, addParam, modifyParam, apiKey = genAPIkey(token)}: ImplementationParams) {
 	let url = `https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`
-	addParam === 'subtask' ? url +=  '/' + AddParams['subtask'] : url
+	addParam === 'subtask' ? url += '/' + AddParams['subtask'] : url
+	modifyParam ? url += '/' + AddParams[modifyParam] : url
 	const res = await axios.post(
 		url,
 		params,
