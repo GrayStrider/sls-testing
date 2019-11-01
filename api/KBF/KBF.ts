@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {KBFParamsGeneric} from '../../types/kanbanflow'
+import {KBF, KBFParamsGeneric} from '../../types/kanbanflow'
 
 require('dotenv').config()
 const token = process.env.KBF_TESTING_API_TOKEN
@@ -9,14 +9,17 @@ const genAPIkey = (token?: string) => {
 	return Buffer.from('apiToken:' + token).toString('base64')
 }
 
-export const kanbanGet = async (resource: string, params?: KBFParamsGeneric, apiKey: string = genAPIkey(token)) =>
-	await axios.get(`https://kanbanflow.com/api/v1/${resource}`,
+export const kanbanGet = async <T extends KBF>(resource: string, params?: KBFParamsGeneric, apiKey: string = genAPIkey(token)) => {
+	const res = await axios.get<T>(`https://kanbanflow.com/api/v1/${resource}`,
 		{
 			headers: {
 				'Authorization': `Basic ${apiKey}`
 			},
 			params
 		})
+	
+	return res.data
+}
 
 // times(1, async () =>
 // 		await kanbanGet('boards'),
