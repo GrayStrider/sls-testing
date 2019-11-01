@@ -1,5 +1,13 @@
 import {Board, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {getBoard, getTaskByID, getTasksByColumn, getTasksByColumnAndSwimlaneParams} from '../requests'
+import {
+	getAllTasksFromBoard,
+	getBoard,
+	getSubtasksByTaskID,
+	getTaskDataByID,
+	getTasksByColumn,
+	getTasksByColumnAndSwimlane,
+	specificProperties
+} from '../requests'
 
 const taskMaxFeatures: Task = {
 	_id: 'hia9zFNn',
@@ -102,9 +110,9 @@ it('should fetch valid board data', async () => {
 
 it('should return a single task by id', async () => {
 	
-	const act1: Task = await getTaskByID('hia9zFNn')
+	const act1: Task = await getTaskDataByID('hia9zFNn')
 	expect(act1).toMatchObject(taskMaxFeatures)
-	const act2: Task = await getTaskByID('hh6RHiEw')
+	const act2: Task = await getTaskDataByID('hh6RHiEw')
 	expect(act2).toMatchObject(taskMinFeatues)
 })
 
@@ -144,7 +152,7 @@ it('should return all tasks in the column', async () => {
 		await getTasksByColumn({columnIndex: 1})
 	expect(actByIndex).toEqual(exp)
 	
-	const expTask2: TasksBySwimlane = {
+	const expTaskByColumnAndSwimlane: TasksBySwimlane = {
 		columnId: 'Uqsc6jy2Cbl9',
 		columnName: 'TEST',
 		tasksLimited: false,
@@ -153,13 +161,24 @@ it('should return all tasks in the column', async () => {
 		swimlaneName: 'B'
 	}
 	const expByColumnAndSwimlane = expect.arrayContaining([
-		expect.objectContaining(expTask2)
+		expect.objectContaining(expTaskByColumnAndSwimlane)
 	])
 	const actByColumnAndSwimlane =
-		await getTasksByColumn({columnIndex: 1, swimlaneId: 'V9eKUkwDY8Vz'})
+		await getTasksByColumnAndSwimlane({columnIndex: 1, swimlaneId: 'V9eKUkwDY8Vz'})
 	expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
 	
 })
 
-const test: getTasksByColumnAndSwimlaneParams =
-	{swimlaneId: '', columnIndex: 3, swimlaneName: ''}
+it('should return all tasks on the board', async () => {
+	const exp = {}
+	const res = await getAllTasksFromBoard()
+	// snapshot will do, since all types are tested in previous tests.
+	expect(res).toMatchSnapshot()
+})
+
+it('should fetch specific task property', async () => {
+	for (const property of specificProperties) {
+		const act = await getTaskDataByID('hia9zFNn', property)
+		expect(act).toMatchSnapshot()
+	}
+}, 9000)
