@@ -1,6 +1,6 @@
 import {Message} from 'discord.js'
 import * as config from '../../config/settings.json'
-import {Commands} from '../../types/kanbanflow'
+import {Commands} from '../../types/bot'
 
 export const commandHandler = async (message: Message, commands: Commands) => {
 	

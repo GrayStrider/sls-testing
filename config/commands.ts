@@ -1,6 +1,7 @@
 import {Message} from 'discord.js'
 import {kanbanGet} from '../api/KBF/KBF'
-import {Command, Commands, Task} from '../types/kanbanflow'
+import {Command, Commands} from '../types/bot'
+import {Task} from '../types/kanbanflow'
 
 const fetchTasks: Command = async (message, params) => {
 	const [msg, tasks] = await Promise.all([

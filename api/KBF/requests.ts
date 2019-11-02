@@ -22,17 +22,6 @@ const getTasksByColumnAndSwimlane = (params: getTasksByColumnAndSwimlaneParams) 
 const getAllTasksFromBoard = () =>
 	kanbanGet<Tasks>('tasks')
 
-////
-
-
-const createTask =
-	(params: createTaskParams) =>
-	kanbanPost({params: params})
-
-const createOrModifyTask =
-	(params: createTaskParams, taskId?: Task['_id']) =>
-	kanbanPost({params: params, apiKey: taskId})
-
 
 export {
 	getBoard,
@@ -40,8 +29,6 @@ export {
 	getTasksByColumn,
 	getTasksByColumnAndSwimlane,
 	getAllTasksFromBoard,
-	createTask,
 	getTaskDetailsById,
-	createOrModifyTask
 }
 
