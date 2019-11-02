@@ -45,19 +45,20 @@ export async function kanbanPost(
 	{params, taskId, addParam, modifyParam,
 		apiKey = genAPIkey(token)}: ImplementationParams) {
 	
-	let url = `https://kanbanflow.com/api/v1/tasks${taskId ? '/' + taskId : ''}`
+	let url = `https://kanbanflow.com/api/v1/tasks`
+	
+	taskId ? url += '/' + taskId : url
 	addParam === 'subtask' ? url += '/' + AddParams['subtask'] : url
 	modifyParam ? url += '/' + AddParams[modifyParam] : url
+	
+	const headers = {
+		'Authorization': `Basic ${apiKey}`,
+		'Content-type': 'application/json'
+		
+	}
+	
 	const res = await axios.post(
-		url,
-		params,
-		{
-			headers: {
-				'Authorization': `Basic ${apiKey}`,
-				'Content-type': 'application/json'
-				
-			}
-		})
+		url, params, {headers})
 	return res.data
 	
 }
