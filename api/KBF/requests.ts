@@ -1,5 +1,6 @@
 import {Board, RequestProps, Task, Tasks} from '../../types/kanbanflow'
-import {kanbanGet, kanbanPost, createTaskParams} from './KBF'
+import {kanbanGet, kanbanPost} from './KBF'
+import {createTaskParams} from './types/interfaces'
 import {getTasksByColumnAndSwimlaneParams, getTasksByColumnParams} from './types/requests'
 
 const getBoard = () =>

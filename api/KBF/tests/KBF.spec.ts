@@ -1,8 +1,8 @@
 import {Attachment, Board, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {createTaskParams, kanbanPost} from '../KBF'
+import {kanbanPost} from '../KBF'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
+import {createTaskParams} from '../types/interfaces'
 import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
-
 
 describe('should fetch data', () => {
 	it('should fetch valid board data', async () => {
@@ -225,7 +225,6 @@ describe('should create / update / delete tasks/properties', () => {
 	// delete all tasks as latest test
 	
 })
-
 describe('should create / update / delete tasks / properties', () => {
 	
 	it('should create subtask', async () => {
@@ -317,7 +316,6 @@ describe('should create / update / delete tasks / properties', () => {
 		throw 'not implemented'
 	})
 })
-
 describe('should manage time entries', () => {
 	
 	it('should get stoppwatch entries', async () => {
@@ -343,7 +341,6 @@ describe('should manage time entries', () => {
 	})
 	
 })
-
 it('should get users', async () => {
 	
 	throw 'Not implemented'
@@ -352,7 +349,6 @@ it('should get events', async () => {
 	
 	throw 'Not implemented'
 })
-
 describe('should manage webhooks', () => {
 	it('should create webhook', async () => {
 		
