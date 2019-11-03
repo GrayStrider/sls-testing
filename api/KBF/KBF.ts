@@ -25,6 +25,38 @@ export const kanbanGet =
 		return res.data
 	}
 
+// returns all tasks for the board with provided API key
+// export async function get(res: 'tasks'): Promise<any>
+// export async function get(res: 'board', params: {boarId: string}): Promise<any>
+
+interface Resources {
+	tasks: { task: string }
+	board: { data: number[] }
+}
+
+interface Params {
+	tasks: { taskId: string }
+	board: never
+}
+
+type keys = keyof Resources & keyof Params
+
+export function get<T extends keys = 'tasks'>(res: T, params: Params[T]): Promise<Resources[T]>
+export function get<T extends keys = 'board'>(res: T): Promise<Resources[T]>
+
+export async function get<T extends keys>(res: T, params?: Params[T]): Promise<Resources[keyof Resources]> {
+	
+	// doesnt infer the narrowing, so need assertion
+	if (res === 'tasks') return {task: 'foo'}
+	
+	return {data: [10, 11]}
+}
+
+get('board')
+	.then(({data}) => data.map(Math.trunc))
+get('tasks', {taskId: ''})
+	.then(({task}) => task.toUpperCase())
+
 
 // create
 export async function kanbanPost(
@@ -42,8 +74,10 @@ export async function kanbanPost(
 
 // implementation 🎉🎉🎉
 export async function kanbanPost(
-	{params, taskId, addParam, modifyParam,
-		apiKey = genAPIkey(token)}: ImplementationParams) {
+	{
+		params, taskId, addParam, modifyParam,
+		apiKey = genAPIkey(token)
+	}: ImplementationParams) {
 	
 	let url = `https://kanbanflow.com/api/v1/tasks`
 	
