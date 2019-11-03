@@ -2,20 +2,20 @@ import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/
 import {kanbanPost} from '../KBF'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
-import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testBoard, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
+import {maxFeatuesId, maxFeaturesParams, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
 
 describe('should fetch data', () => {
-	it('should fetch valid board data', () => {
+	it('valid board data', () => {
 		getBoard().then((res) =>
 			expect(res).toMatchObject(testBoard))
 	})
-	it('should return a single task by id', () => {
+	it('a single task by id', () => {
 		getTaskByID(maxFeatuesId).then((act) =>
 			expect(act).toMatchObject(taskMaxFeatures))
 		getTaskByID('hh6RHiEw').then((act) =>
 			expect(act).toMatchObject(taskMinFeatues))
 	})
-	it('should return all tasks in the column', async () => {
+	it('all tasks in the column', async () => {
 		const expTasks: Tasks = [
 			{
 				columnId: 'Uqsc6jy2Cbl9',
@@ -68,14 +68,12 @@ describe('should fetch data', () => {
 		expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
 		
 	})
-	it('should return all tasks on the board', () => {
+	it('all tasks on the board', () => {
 		getAllTasksFromBoard().then((act) =>
 			// snapshot will do, since all types are tested in previous tests.
 			expect(act).toMatchSnapshot())
 	})
-})
-describe('should fetch specific task properties', () => {
-	it('should fetch comments', async () => {
+	it('comments', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'comments')
 		
 		const exp: Comment = {
@@ -92,7 +90,7 @@ describe('should fetch specific task properties', () => {
 		)
 		
 	})
-	it('should fetch labels', async () => {
+	it('labels', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'labels')
 		
 		expect(act).toMatchObject(
@@ -101,7 +99,7 @@ describe('should fetch specific task properties', () => {
 			])
 		)
 	})
-	it('should fetch dates', async () => {
+	it('dates', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'dates')
 		expect(act).toMatchObject(
 			expect.arrayContaining([
@@ -110,18 +108,18 @@ describe('should fetch specific task properties', () => {
 			])
 		)
 	})
-	it('should fetch subtasks', async () => {
+	it('subtasks', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'subtasks')
 		expect(act[0]).toMatchObject(testSubtasks[0])
 		expect(act[1]).toMatchObject(testSubtasks[1])
 	})
-	it('should fetch collaborators', async () => {
+	it('collaborators', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'collaborators')
 		
 		expect(act).toHaveLength(0)
 		
 	})
-	it('should fetch attachments', async () => {
+	it('attachments', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'attachments')
 		const exp: Partial<Attachment> = {
 			// some properties omitted
@@ -135,57 +133,32 @@ describe('should fetch specific task properties', () => {
 		expect(act[0]).toMatchObject(exp)
 	})
 })
-describe('should create / update / delete tasks/properties', () => {
-	let testTempTaskId: Task['_id']
+describe('should create / update / delete [tasks / properties]', () => {
+	let testTempMaxTaskId: Task['_id'] // to delete later
+	let testTempMinTaskId: Task['_id']
 	
 	it('should add new task', async () => {
-		const minFeaturesParams: createTaskParams = {
-			name: 'TESTMIN',
-			columnId: testColumnId,
-			swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
-		}
-		const maxFeaturesParams: createTaskParams = {
-			name: 'TESTMAX',
-			columnId: testColumnId,
-			swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
-			// position: 'bottom', //todo position and grouping data are mutually exclusive
-			color: 'green',
-			description: 'TEST',
-			number: {prefix: 'TESTPREFIX', value: 99},
-			responsibleUserId: testUserId,
-			totalSecondsEstimate: 60,
-			pointsEstimate: 100.99,
-			groupingDate: null,
-			dates: [testDate],
-			subTasks: [testSubtasks[0]],
-			labels: [testLabel],
-			collaborators: []
-		}
+		kanbanPost({params: minFeaturesParams}).then((act) => {
+			expect(act).toHaveProperty(['taskId'])
+			expect(act).toHaveProperty(['taskNumber'])
+			testTempMinTaskId = act.taskId
+		})
 		
-		const actMin = await kanbanPost({params: minFeaturesParams})
-		expect(actMin).toHaveProperty(['taskId'])
-		expect(actMin).toHaveProperty(['taskNumber'])
-		
-		const actMax = await kanbanPost({params: maxFeaturesParams})
-		expect(actMax).toHaveProperty(['taskId'])
-		expect(actMax).toHaveProperty(['taskNumber'])
-		
-		testTempTaskId = actMax.taskId
+		kanbanPost({params: maxFeaturesParams}).then((act) => {
+			expect(act).toHaveProperty(['taskId'])
+			expect(act).toHaveProperty(['taskNumber'])
+			testTempMaxTaskId = act.taskId
+		})
 	})
 	it('should update task', async () => {
 		const changes: Partial<createTaskParams> = {
 			name: 'CHANGED'
 			// todo
 		}
-		await kanbanPost({params: changes, taskId: testTempTaskId})
-		const result = await getTaskByID(testTempTaskId)
+		await kanbanPost({params: changes, taskId: testTempMaxTaskId})
+		const result = await getTaskByID(testTempMaxTaskId)
 		expect(result.name).toBe(changes.name)
 	})
-	// delete all tasks as latest test
-	
-})
-describe('should create / update / delete tasks / properties', () => {
-	
 	it.skip('should create subtask', () => {
 		kanbanPost({
 			addParam: 'subtask', taskId: maxFeatuesId,
