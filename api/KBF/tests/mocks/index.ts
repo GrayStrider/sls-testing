@@ -1,4 +1,4 @@
-import {Collaborator, Date, Label, SubTask, Task} from '../../../../types/kanbanflow'
+import {Board, Collaborator, Date, Label, SubTask, Task} from '../../../../types/kanbanflow'
 
 export const taskMaxFeatures: Task = {
 	_id: 'hia9zFNn',
@@ -82,3 +82,42 @@ export const testLabel: Label = {
 	pinned: false
 }
 const testCollaborator: Collaborator = {userId: ''}
+export const testBoard: Board = {
+	_id: 'is54ys',
+	name: 'API TEST BOARD',
+	columns: [
+		{
+			uniqueId: 'UpPKrbzD8yBN',
+			name: 'To-do'
+		},
+		{
+			uniqueId: 'Uqsc6jy2Cbl9',
+			name: 'TEST'
+		},
+		{
+			uniqueId: 'Urnu6XfQg3yU',
+			name: 'Awaiting review'
+		},
+		{
+			uniqueId: 'UsbzO1HUaPhw',
+			name: 'Done'
+		}
+	],
+	colors: [
+		{
+			name: 'White',
+			description: 'desc',
+			value: 'white'
+		}
+	],
+	swimlanes: [
+		{
+			uniqueId: 'V8pP3mn7NcSG',
+			name: 'A'
+		},
+		{
+			uniqueId: 'V9eKUkwDY8Vz',
+			name: 'B'
+		}
+	]
+}

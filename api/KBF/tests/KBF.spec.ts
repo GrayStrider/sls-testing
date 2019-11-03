@@ -1,52 +1,13 @@
-import {Attachment, Board, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
+import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {kanbanPost} from '../KBF'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
-import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
+import {maxFeatuesId, taskMaxFeatures, taskMinFeatues, testBoard, testColumnId, testDate, testLabel, testSubtasks, testSwimlaneId, testUserId} from './mocks'
 
 describe('should fetch data', () => {
 	it('should fetch valid board data', async () => {
-		const exp: Board = {
-			_id: 'is54ys',
-			name: 'GH> KBF TS',
-			columns: [
-				{
-					uniqueId: 'UpPKrbzD8yBN',
-					name: 'To-do'
-				},
-				{
-					uniqueId: 'Uqsc6jy2Cbl9',
-					name: 'TEST'
-				},
-				{
-					uniqueId: 'Urnu6XfQg3yU',
-					name: 'Awaiting review'
-				},
-				{
-					uniqueId: 'UsbzO1HUaPhw',
-					name: 'Done'
-				}
-			],
-			colors: [
-				{
-					name: 'White',
-					description: 'desc',
-					value: 'white'
-				}
-			],
-			swimlanes: [
-				{
-					uniqueId: 'V8pP3mn7NcSG',
-					name: 'A'
-				},
-				{
-					uniqueId: 'V9eKUkwDY8Vz',
-					name: 'B'
-				}
-			]
-		}
 		const res = await getBoard()
-		expect(res).toMatchObject(exp)
+		expect(res).toMatchObject(testBoard)
 		
 	})
 	it('should return a single task by id', async () => {
@@ -251,7 +212,6 @@ describe('should create / update / delete tasks / properties', () => {
 		
 		throw 'not implemented'
 	})
-	
 	
 	it('should create label', async () => {
 		throw 'not implemented'
