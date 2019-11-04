@@ -1,8 +1,8 @@
 import axios from 'axios'
-import {Board, Task} from '../../types/kanbanflow'
 import {AddParams, AddSubtaskParams, CreateParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
 import {genAPIkey} from './utils'
+import {Board, Task} from '../../types/kanbanflow'
 
 require('dotenv').config()
 
@@ -79,7 +79,7 @@ export const KBF: KBF = () => {
 		'Authorization': `Basic ${genAPIkey()}`,
 		'Content-type': 'application/json'
 	}
-	
+
 	return {
 		board: {
 			async get() {
@@ -88,7 +88,7 @@ export const KBF: KBF = () => {
 				return data
 			}
 		},
-		
+
 		task: (taskId: string) => ({
 			async get() {
 				URL += `tasks/${taskId}`
@@ -100,7 +100,7 @@ export const KBF: KBF = () => {
 				await axios.post(URL, params, {headers})
 			}
 		}),
-		
+
 		async createTask(params: CreateParams) {
 			URL += `tasks`
 			const {data} = await axios.post(URL, params, {headers})

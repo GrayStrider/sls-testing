@@ -1,12 +1,12 @@
 import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {kanbanPost} from '../index'
+import {kanbanPost, KBF} from '../index'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
 import {maxFeatuesId, maxFeaturesParams, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
 
 describe('should fetch data', () => {
 	it('valid board data', () => {
-		getBoard().then((res) =>
+		KBF().board.get().then((res) =>
 			expect(res).toMatchObject(testBoard))
 	})
 	it('a single task by id', () => {
