@@ -1,3 +1,6 @@
+require('dotenv').config()
+
+
 export const token = process.env.KBF_TESTING_API_TOKEN
 export const genAPIkey = (token?: string) => {
 	if (!token) throw 'Please provide an API token'
