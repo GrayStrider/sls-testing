@@ -4,8 +4,6 @@ import {AddParams, AddSubtaskParams, CreateParams, ImplementationParams, ModifyS
 import {getTasksByColumnParams} from './types/requests'
 import {genAPIkey} from './utils'
 
-require('dotenv').config()
-
 export const kanbanGet = async <T>(resource: string, params?: getTasksByColumnParams): Promise<T> => {
 	const url = `https://kanbanflow.com/api/v1/${resource}`
 	const headers = {
