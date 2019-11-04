@@ -16,47 +16,47 @@ export const kanbanGet = async <T>(resource: string, params?: getTasksByColumnPa
 	
 	return data
 }
+//
+// // todo interface instead of overloading
+// interface Get {
+// 	tasks: (taskId: string) => Promise<Tasks>
+// 	board: () => Promise<Board>
+// 	subtasks: (taskId: string) => Promise<SubTask[]>
+// }
+//
+//
+// interface Resources {
+// 	tasks: { task: string }
+// 	board: { data: number[] }
+// }
+//
+// interface Params {
+// 	tasks: { taskId: string, columnIndex: number }
+// 	board: never
+// }
+//
+// type keys = keyof Resources & keyof Params
+//
+// const tasks = 'tasks'
+//
+// export function get<T extends keys = 'tasks'>(res: 'tasks', params: Params[T]): Promise<Resources[T]>
+// export function get<T extends keys = 'board'>(res: 'board'): Promise<Resources[T]>
+//
+// export async function get<T extends keys>(res: T, params?: Params[T]): Promise<Resources[T]> {
+//
+// 	// doesnt infer the narrowing, so need assertion
+// 	if (res === 'tasks') return {task: 'foo'} as Resources[T]
+//
+// 	return {data: [10, 11]} as Resources[T]
+// }
 
-// todo interface instead of overloading
-interface Get {
-	tasks: (taskId: string) => Promise<Tasks>
-	board: () => Promise<Board>
-	subtasks: (taskId: string) => Promise<SubTask[]>
-}
+// get('board').then(({data}) => data.map(Math.trunc))
+// get('tasks', {taskId: '', columnIndex: 4}).then(({task}) => task.toUpperCase())
 
 
-interface Resources {
-	tasks: { task: string }
-	board: { data: number[] }
-}
-
-interface Params {
-	tasks: { taskId: string, columnIndex: number }
-	board: never
-}
-
-type keys = keyof Resources & keyof Params
-
-const tasks = 'tasks'
-
-export function get<T extends keys = 'tasks'>(res: 'tasks', params: Params[T]): Promise<Resources[T]>
-export function get<T extends keys = 'board'>(res: 'board'): Promise<Resources[T]>
-
-export async function get<T extends keys>(res: T, params?: Params[T]): Promise<Resources[T]> {
-	
-	// doesnt infer the narrowing, so need assertion
-	if (res === 'tasks') return {task: 'foo'} as Resources[T]
-	
-	return {data: [10, 11]} as Resources[T]
-}
-
-get('board').then(({data}) => data.map(Math.trunc))
-get('tasks', {taskId: '', columnIndex: 4}).then(({task}) => task.toUpperCase())
-
-
-export function getTasks() {
-
-}
+// export function getTasks() {
+//
+// }
 
 // create
 export async function kanbanPost(
@@ -119,7 +119,7 @@ export const KBF: KBF = () => {
 		'Authorization': `Basic ${genAPIkey()}`,
 		'Content-type': 'application/json'
 	}
-	
+
 	return {
 		board: {
 			async get() {
@@ -128,7 +128,7 @@ export const KBF: KBF = () => {
 				return data
 			}
 		},
-		
+
 		task: (taskId: string) => ({
 			async get() {
 				URL += `tasks/${taskId}`
@@ -140,7 +140,7 @@ export const KBF: KBF = () => {
 				await axios.post(URL, params, {headers})
 			}
 		}),
-		
+
 		async createTask(params: CreateParams) {
 			URL += `tasks`
 			const {data} = await axios.post(URL, params, {headers})
@@ -148,3 +148,5 @@ export const KBF: KBF = () => {
 		}
 	}
 }
+
+KBF()
