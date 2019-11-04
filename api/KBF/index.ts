@@ -4,6 +4,8 @@ import {AddParams, AddSubtaskParams, CreateParams, ImplementationParams, ModifyS
 import {getTasksByColumnParams} from './types/requests'
 import {genAPIkey} from './utils'
 
+require('dotenv').config()
+
 export const kanbanGet = async <T>(resource: string, params?: getTasksByColumnParams): Promise<T> => {
 	const url = `https://kanbanflow.com/api/v1/${resource}`
 	const headers = {
@@ -39,7 +41,7 @@ export async function kanbanPost({params, taskId, addParam, modifyParam,}: Imple
 	addParam === 'subtask' ? url += '/' + AddParams['subtask'] : url
 	modifyParam ? url += '/' + AddParams[modifyParam] : url
 	
-	const headers: any = {
+	const headers = {
 		'Authorization': `Basic ${genAPIkey()}`,
 		'Content-type': 'application/json'
 		
@@ -47,7 +49,7 @@ export async function kanbanPost({params, taskId, addParam, modifyParam,}: Imple
 	
 	
 	const {data} = await axios.post(
-		url, params, headers)
+		url, params, {headers})
 	return data
 	
 }
