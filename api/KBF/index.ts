@@ -1,8 +1,9 @@
 import axios from 'axios'
-import {AddParams, AddSubtaskParams, CreateParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
+import {Mock} from 'ts-mockery'
+import {Board, Task} from '../../types/kanbanflow'
+import {AddParams, AddSubtaskParams, CreateParams, createTaskParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
 import {genAPIkey} from './utils'
-import {Board, Task, Tasks} from '../../types/kanbanflow'
 
 require('dotenv').config()
 
@@ -54,43 +55,28 @@ export async function kanbanPost({params, taskId, addParam, modifyParam,}: Imple
 	
 }
 
-export const KBF = () => {
-	let URL = `https://kanbanflow.com/api/v1/`
+export function KBF() {
+	let API_URL = `https://kanbanflow.com/api/v1/`
 	const headers = {
 		'Authorization': `Basic ${genAPIkey()}`,
 		'Content-type': 'application/json'
 	}
-
+	const postData = <T>(URL: string, params?: any) =>
+		axios.post<T>(API_URL += URL, params, {headers}).then((res) => res.data)
+	const getData = <T>(URL: string) =>
+		axios.get<T>(API_URL += URL, {headers}).then((res) => res.data)
+	
 	return {
 		board: {
-			async get(): Promise<Board> {
-				URL += `board`
-				const {data} = await axios.get(URL, {headers})
-				return data
-			}
+			get: () => getData<Board>(`board`)
 		},
-		
-		async tasks(): Promise<Tasks> {
-		
-		},
-		
+		tasks: () => Mock.of<Promise<Task[]>>(),
 		task: (taskId: string) => ({
-			async get(): Promise<Task> {
-				URL += `tasks/${taskId}`
-				const {data} = await axios.get(URL, {headers})
-				return data
-			},
-			
-			async update(params: UpdateParams): Promise<void> {
-				URL += `tasks/${taskId}`
-				await axios.post(URL, params, {headers})
-			}
+			get: () => getData<Task>(`tasks/${taskId}`),
+			update: (params: Partial<createTaskParams>) =>
+				postData<void>(`tasks/${taskId}`, params)
 		}),
-
-		async createTask(params: CreateParams): Promise<postReply> {
-			URL += `tasks`
-			const {data} = await axios.post(URL, params, {headers})
-			return data
-		}
+		createTask: (params: CreateParams) =>
+			postData<postReply>(`tasks`, params)
 	}
 }

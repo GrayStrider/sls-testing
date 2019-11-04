@@ -29,6 +29,7 @@ export {
 	getTasksByColumn,
 	getTasksByColumnAndSwimlane,
 	getAllTasksFromBoard,
+	
 	getTaskDetailsById,
 }
 
