@@ -1,5 +1,5 @@
 import {Message} from 'discord.js'
-import {kanbanGet} from '../api/KBF/KBF'
+import {kanbanGet} from '../api/KBF'
 import {Command, Commands} from '../types/bot'
 import {Task} from '../types/kanbanflow'
 

@@ -1,5 +1,5 @@
 import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
-import {kanbanPost} from '../KBF'
+import {kanbanPost} from '../index'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
 import {maxFeatuesId, maxFeaturesParams, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'

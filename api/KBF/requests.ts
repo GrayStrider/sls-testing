@@ -1,5 +1,5 @@
 import {Board, RequestProps, Task, Tasks} from '../../types/kanbanflow'
-import {kanbanGet, kanbanPost} from './KBF'
+import {kanbanGet, kanbanPost} from './index'
 import {createTaskParams} from './types/interfaces'
 import {getTasksByColumnAndSwimlaneParams, getTasksByColumnParams} from './types/requests'
 
