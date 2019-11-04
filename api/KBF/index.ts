@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {Board, SubTask, Task, Tasks} from '../../types/kanbanflow'
+import {Board, Task} from '../../types/kanbanflow'
 import {AddParams, AddSubtaskParams, CreateParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
 import {genAPIkey} from './utils'
@@ -15,46 +15,6 @@ export const kanbanGet = async <T>(resource: string, params?: getTasksByColumnPa
 	return data
 }
 
-// todo interface instead of overloading
-interface Get {
-	tasks: (taskId: string) => Promise<Tasks>
-	board: () => Promise<Board>
-	subtasks: (taskId: string) => Promise<SubTask[]>
-}
-
-
-interface Resources {
-	tasks: { task: string }
-	board: { data: number[] }
-}
-
-interface Params {
-	tasks: { taskId: string, columnIndex: number }
-	board: never
-}
-
-type keys = keyof Resources & keyof Params
-
-const tasks = 'tasks'
-
-export function get<T extends keys = 'tasks'>(res: 'tasks', params: Params[T]): Promise<Resources[T]>
-export function get<T extends keys = 'board'>(res: 'board'): Promise<Resources[T]>
-
-export async function get<T extends keys>(res: T, params?: Params[T]): Promise<Resources[T]> {
-	
-	// doesnt infer the narrowing, so need assertion
-	if (res === 'tasks') return {task: 'foo'} as Resources[T]
-	
-	return {data: [10, 11]} as Resources[T]
-}
-
-get('board').then(({data}) => data.map(Math.trunc))
-get('tasks', {taskId: '', columnIndex: 4}).then(({task}) => task.toUpperCase())
-
-
-export function getTasks() {
-
-}
 
 // create
 export async function kanbanPost(
