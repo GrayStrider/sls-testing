@@ -2,7 +2,7 @@ import axios from 'axios'
 import {AddParams, AddSubtaskParams, CreateParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
 import {genAPIkey} from './utils'
-import {Board, Task} from '../../types/kanbanflow'
+import {Board, Task, Tasks} from '../../types/kanbanflow'
 
 require('dotenv').config()
 
@@ -54,26 +54,7 @@ export async function kanbanPost({params, taskId, addParam, modifyParam,}: Imple
 	
 }
 
-type KBF = () => {
-	board: {
-		get(): Promise<Board>
-	}
-	task(taskId: string): {
-		get(): Promise<Task>
-		update(params: UpdateParams): Promise<void>
-		// addProperty: {
-		// 	subtask: (params: AddSubtaskParams) => Promise<{ insertIndex: number }>
-		// }
-		// updateProperty: {
-		// 	subtask: (params: ModifySubtaskParams) => Promise<void>
-		// }
-	}
-	
-	createTask(params: CreateParams): Promise<postReply>
-}
-
-
-export const KBF: KBF = () => {
+export const KBF = () => {
 	let URL = `https://kanbanflow.com/api/v1/`
 	const headers = {
 		'Authorization': `Basic ${genAPIkey()}`,
@@ -82,26 +63,31 @@ export const KBF: KBF = () => {
 
 	return {
 		board: {
-			async get() {
+			async get(): Promise<Board> {
 				URL += `board`
 				const {data} = await axios.get(URL, {headers})
 				return data
 			}
 		},
-
+		
+		async tasks(): Promise<Tasks> {
+		
+		},
+		
 		task: (taskId: string) => ({
-			async get() {
+			async get(): Promise<Task> {
 				URL += `tasks/${taskId}`
 				const {data} = await axios.get(URL, {headers})
 				return data
 			},
-			async update(params) {
+			
+			async update(params: UpdateParams): Promise<void> {
 				URL += `tasks/${taskId}`
 				await axios.post(URL, params, {headers})
 			}
 		}),
 
-		async createTask(params: CreateParams) {
+		async createTask(params: CreateParams): Promise<postReply> {
 			URL += `tasks`
 			const {data} = await axios.post(URL, params, {headers})
 			return data
