@@ -1,11 +1,10 @@
 import axios from 'axios'
 import {Mock} from 'ts-mockery'
 import {Board, Task} from '../../types/kanbanflow'
+import {dispatch} from './lib/axiosGeneric'
+import {genAPIkey} from './lib/genApiKey'
 import {AddParams, AddSubtaskParams, CreateParams, createTaskParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
-import {genAPIkey} from './utils'
-
-require('dotenv').config()
 
 export const kanbanGet = async <T>(resource: string, params?: getTasksByColumnParams): Promise<T> => {
 	const url = `https://kanbanflow.com/api/v1/${resource}`
@@ -44,39 +43,25 @@ export async function kanbanPost({params, taskId, addParam, modifyParam,}: Imple
 	
 	const headers = {
 		'Authorization': `Basic ${genAPIkey()}`,
-		'Content-type': 'application/json'
-		
+		'Content-type' : 'application/json'
 	}
-	
 	
 	const {data} = await axios.post(
 		url, params, {headers})
 	return data
-	
 }
 
-export function KBF() {
-	let API_URL = `https://kanbanflow.com/api/v1/`
-	const headers = {
-		'Authorization': `Basic ${genAPIkey()}`,
-		'Content-type': 'application/json'
-	}
-	const postData = <T>(URL: string, params?: any) =>
-		axios.post<T>(API_URL += URL, params, {headers}).then((res) => res.data)
-	const getData = <T>(URL: string) =>
-		axios.get<T>(API_URL += URL, {headers}).then((res) => res.data)
-	
-	return {
-		board: {
-			get: () => getData<Board>(`board`)
-		},
-		tasks: () => Mock.of<Promise<Task[]>>(),
-		task: (taskId: string) => ({
-			get: () => getData<Task>(`tasks/${taskId}`),
-			update: (params: Partial<createTaskParams>) =>
-				postData<void>(`tasks/${taskId}`, params)
-		}),
-		createTask: (params: CreateParams) =>
-			postData<postReply>(`tasks`, params)
-	}
+export const KBF = {
+	board: () =>
+		dispatch<Board>('get', 'board'),
+	tasks: {
+		getAll : () =>
+			Mock.of<Promise<Task[]>>(),
+		getById: (taskId: string) =>
+			dispatch<Task>('get', ['tasks', taskId]),
+		update : (taskId: string, props: Partial<createTaskParams>) =>
+			dispatch<void>('post', ['tasks', taskId], props),
+		create : (props: CreateParams) =>
+			dispatch<postReply>('post', 'tasks', props)
+	},
 }

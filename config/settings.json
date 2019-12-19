@@ -2,7 +2,7 @@
   "botTriggerPrefix": "++",
   "argsSeparator": "=",
   "ignoredErrors": [
-    "Ignored message from bot",
+    "Message from a bot has been ignored",
     "Not a bot command"
   ]
 }

@@ -1,18 +1,18 @@
 import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {kanbanPost, KBF} from '../index'
-import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
+import {getAllTasksFromBoard, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
 import {maxFeatuesId, maxFeaturesParams, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
 
 describe('should fetch data', () => {
 	it('valid board data', () => {
-		KBF().board.get().then((res) =>
+		KBF.board().then((res) =>
 			expect(res).toMatchObject(testBoard))
 	})
 	it('a single task by id', () => {
-		getTaskByID(maxFeatuesId).then((act) =>
+		KBF.tasks.getById(maxFeatuesId).then((act) =>
 			expect(act).toMatchObject(taskMaxFeatures))
-		getTaskByID('hh6RHiEw').then((act) =>
+		KBF.tasks.getById('hh6RHiEw').then((act) =>
 			expect(act).toMatchObject(taskMinFeatues))
 	})
 	it('all tasks in the column', async () => {
@@ -68,7 +68,8 @@ describe('should fetch data', () => {
 		expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
 		
 	})
-	it('all tasks on the board', () => {
+	it.todo('all tasks on the board', () => {
+		KBF.tasks.getAll().then((tasks) => tasks.map((task) => task.name))
 		getAllTasksFromBoard().then((act) =>
 			// snapshot will do, since all types are tested in previous tests.
 			expect(act).toMatchSnapshot())
@@ -155,8 +156,12 @@ describe('should create / update / delete [tasks / properties]', () => {
 			name: 'CHANGED'
 			// todo
 		}
+		KBF.tasks.update(testTempMaxTaskId, {
+			name: 'UPDATED'
+			}).then()
+		
 		await kanbanPost({params: changes, taskId: testTempMaxTaskId})
-		const result = await getTaskByID(testTempMaxTaskId)
+		const result = await KBF.tasks.getById(testTempMaxTaskId)
 		expect(result.name).toBe(changes.name)
 	})
 	it.skip('should create subtask', () => {

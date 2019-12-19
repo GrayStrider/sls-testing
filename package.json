@@ -34,7 +34,7 @@
     "ts-jest": "^24.1.0",
     "ts-loader": "^5.3.3",
     "ts-mockery": "^1.2.0",
-    "typescript": "^3.7.1-rc",
+    "typescript": "^3.7.2",
     "webpack": "^4.29.0"
   }
 }
