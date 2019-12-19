@@ -1,11 +1,11 @@
 import axios from 'axios'
 import {Mock} from 'ts-mockery'
 import {Board, Task} from '../../types/kanbanflow'
+import {dispatch} from './lib/axiosGeneric'
+import {genAPIkey} from './lib/genApiKey'
 import {AddParams, AddSubtaskParams, CreateParams, createTaskParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
-import {genAPIkey} from './utils'
 
-require('dotenv').config()
 
 export const kanbanGet = async <T>(resource: string, params?: getTasksByColumnParams): Promise<T> => {
 	const url = `https://kanbanflow.com/api/v1/${resource}`
@@ -68,7 +68,7 @@ export function KBF() {
 	
 	return {
 		board: {
-			get: () => getData<Board>(`board`)
+			get: () => dispatch<Board>('get', 'board')
 		},
 		tasks: () => Mock.of<Promise<Task[]>>(),
 		task: (taskId: string) => ({
