@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should fetch data dates 1`] = `
+exports[`should fetch data comments 1`] = `
 Array [
   Object {
     "columnId": "UpPKrbzD8yBN",
@@ -155,7 +155,7 @@ Array [
 ]
 `;
 
-exports[`should fetch data should return all tasks on the board 1`] = `
+exports[`should fetch data labels 1`] = `
 Array [
   Object {
     "columnId": "UpPKrbzD8yBN",
@@ -310,7 +310,7 @@ Array [
 ]
 `;
 
-exports[`should return all tasks on the board 1`] = `
+exports[`should fetch data subtasks 1`] = `
 Array [
   Object {
     "columnId": "UpPKrbzD8yBN",
