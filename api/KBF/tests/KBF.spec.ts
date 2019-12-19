@@ -138,7 +138,8 @@ describe('should fetch data', () => {
 		}
 		expect(act[0]).toMatchObject(exp)
 	})
-	it('from several tasks', async () => {
+	
+	it('from several tasks', () => {
 		KBF.tasks.getPropertyById([maxFeatuesId, minFeatureId], 'comments').then(
 			(act) => expect(act.length).toBe(1)
 		)
@@ -148,14 +149,14 @@ describe('should create / update / delete [tasks / properties]', () => {
 	let testTempMaxTaskId: Task['_id'] // to delete later
 	let testTempMinTaskId: Task['_id']
 	
-	it.skip('should add new task', async () => {
-		kanbanPost({params: minFeaturesParams}).then((act) => {
+	it('should add new task',  () => {
+		KBF.tasks.create(minFeaturesParams).then((act) => {
 			expect(act).toHaveProperty(['taskId'])
 			expect(act).toHaveProperty(['taskNumber'])
 			testTempMinTaskId = act.taskId
 		})
 		
-		kanbanPost({params: maxFeaturesParams}).then((act) => {
+		KBF.tasks.create(maxFeaturesParams).then((act) => {
 			expect(act).toHaveProperty(['taskId'])
 			expect(act).toHaveProperty(['taskNumber'])
 			testTempMaxTaskId = act.taskId
