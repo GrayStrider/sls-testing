@@ -61,8 +61,7 @@ export const KBF = {
 	tasks: {
 		getAll : () =>
 			dispatch<Task[]>('get', 'tasks'),
-		getById: (taskId: string) =>
-			dispatch<Task>('get', ['tasks', taskId]),
+		getById,
 		getPropertyById: <K extends keyof RequestProps>(taskId: string, property: K) =>
 			dispatch<RequestProps[K][]>('get', ['tasks', taskId, property]),
 		update : (taskId: string, props: Partial<createTaskParams>) =>

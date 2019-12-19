@@ -58,6 +58,8 @@ export const taskMinFeatues: Task = {
 	groupingDate: ''
 }
 export const maxFeatuesId = 'hia9zFNn'
+export const minFeatureId = 'hh6RHiEw'
+
 export const testColumnId = 'Uqsc6jy2Cbl9'
 export const testSwimlaneId = 'V8pP3mn7NcSG'
 export const testUserId = '5b2a3ad796a22ce0d687f7f8181232b1'
