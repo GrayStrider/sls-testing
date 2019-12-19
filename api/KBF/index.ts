@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {Mock} from 'ts-mockery'
 import {Board, Task} from '../../types/kanbanflow'
-import {dispatch} from './lib/axiosGeneric'
+import {dispatch, headers} from './lib/axiosGeneric'
 import {genAPIkey} from './lib/genApiKey'
 import {AddParams, AddSubtaskParams, CreateParams, CreateParams2, createTaskParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
@@ -64,7 +64,8 @@ export const KBF = {
 			dispatch<Task>('get', ['tasks', taskId]),
 		update : (taskId: string, props: Partial<createTaskParams>) =>
 			dispatch<void>('post', ['tasks', taskId], props),
-		create : (props: CreateParams2) =>
-			dispatch<postReply>('post', 'tasks', props)
+		create : (params: CreateParams2) =>
+			// dispatch<postReply>('post', 'tasks', params)
+			axios({method: 'post', url: 'https://kanbanflow.com/api/v1/tasks', data: params, headers}) as unknown as Promise<postReply>
 	},
 }

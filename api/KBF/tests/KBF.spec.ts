@@ -1,14 +1,8 @@
-import {Attachment, Board, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
+import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {kanbanPost, KBF} from '../index'
-import {dispatch} from '../lib/axiosGeneric'
-import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
+import {getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
-import {maxFeatuesId, maxFeaturesParams, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
-
-// it('should fetch data', async () => {
-//   const res = await dispatch<Board>('get', 'board')
-//   console.log(res)
-// });
+import {maxFeatuesId, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
 
 describe('should fetch data', () => {
 	it('valid board data', () => {
@@ -24,19 +18,19 @@ describe('should fetch data', () => {
 	it.skip('all tasks in the column', async () => {
 		const expTasks: Tasks = [
 			{
-				columnId: 'Uqsc6jy2Cbl9',
-				columnName: 'TEST',
+				columnId    : 'Uqsc6jy2Cbl9',
+				columnName  : 'TEST',
 				tasksLimited: false,
-				tasks: [taskMinFeatues, taskMaxFeatures],
-				swimlaneId: 'V8pP3mn7NcSG',
+				tasks       : [taskMinFeatues, taskMaxFeatures],
+				swimlaneId  : 'V8pP3mn7NcSG',
 				swimlaneName: 'A',
 			},
 			{
-				columnId: 'Uqsc6jy2Cbl9',
-				columnName: 'TEST',
+				columnId    : 'Uqsc6jy2Cbl9',
+				columnName  : 'TEST',
 				tasksLimited: false,
-				tasks: [],
-				swimlaneId: 'V9eKUkwDY8Vz',
+				tasks       : [],
+				swimlaneId  : 'V9eKUkwDY8Vz',
 				swimlaneName: 'B'
 			}
 		]
@@ -59,11 +53,11 @@ describe('should fetch data', () => {
 		expect(actByIndex).toEqual(exp)
 
 		const expTaskByColumnAndSwimlane: TasksBySwimlane = {
-			columnId: 'Uqsc6jy2Cbl9',
-			columnName: 'TEST',
+			columnId    : 'Uqsc6jy2Cbl9',
+			columnName  : 'TEST',
 			tasksLimited: false,
-			tasks: [],
-			swimlaneId: 'V9eKUkwDY8Vz',
+			tasks       : [],
+			swimlaneId  : 'V9eKUkwDY8Vz',
 			swimlaneName: 'B'
 		}
 		const expByColumnAndSwimlane = expect.arrayContaining([
@@ -79,13 +73,13 @@ describe('should fetch data', () => {
 			// snapshot will do, since all types are tested in previous tests.
 			expect(act).toMatchSnapshot())
 	})
-	it.skip('comments', async () => {
+	it('comments', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'comments')
 
 		const exp: Comment = {
-			_id: 'm8q9JVny',
-			text: 'test',
-			authorUserId: '5b2a3ad796a22ce0d687f7f8181232b1',
+			_id             : 'm8q9JVny',
+			text            : 'test',
+			authorUserId    : '5b2a3ad796a22ce0d687f7f8181232b1',
 			createdTimestamp: '2019-11-01T04:21:31.774Z'
 		}
 
@@ -96,7 +90,7 @@ describe('should fetch data', () => {
 		)
 
 	})
-	it.skip('labels', async () => {
+	it('labels', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'labels')
 
 		expect(act).toMatchObject(
@@ -105,7 +99,7 @@ describe('should fetch data', () => {
 			])
 		)
 	})
-	it.skip('dates', async () => {
+	it('dates', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'dates')
 		expect(act).toMatchObject(
 			expect.arrayContaining([
@@ -114,34 +108,36 @@ describe('should fetch data', () => {
 			])
 		)
 	})
-	it.skip('subtasks', async () => {
+	it('subtasks', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'subtasks')
 		expect(act[0]).toMatchObject(testSubtasks[0])
 		expect(act[1]).toMatchObject(testSubtasks[1])
 	})
-	it.skip('collaborators', async () => {
+	it('collaborators', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'collaborators')
 
 		expect(act).toHaveLength(0)
 
 	})
-	it.skip('attachments', async () => {
+	it('attachments', async () => {
 		const act = await getTaskDetailsById(maxFeatuesId, 'attachments')
 		const exp: Partial<Attachment> = {
 			// some properties omitted
-			_id: 'QWAnJzYkcu7x',
-			provider: 'KanbanFlow',
-			name: 'wuauserv.reg.jpg',
-			size: 6990,
-			mimeType: 'image/jpeg',
+			_id             : 'QWAnJzYkcu7x',
+			provider        : 'KanbanFlow',
+			name            : 'wuauserv.reg.jpg',
+			size            : 6990,
+			mimeType        : 'image/jpeg',
 			createdTimestamp: '2019-11-01T12:37:01.675Z',
 		}
 		expect(act[0]).toMatchObject(exp)
 	})
 })
+
 describe('should create / update / delete [tasks / properties]', () => {
 	let testTempMaxTaskId: Task['_id'] // to delete later
 	let testTempMinTaskId: Task['_id']
+
 
 	it('should add new task', async () => {
 		kanbanPost({params: minFeaturesParams}).then((act) => {
@@ -149,16 +145,11 @@ describe('should create / update / delete [tasks / properties]', () => {
 			expect(act).toHaveProperty(['taskNumber'])
 		})
 		KBF.tasks.create(minFeaturesParams).then((act) => {
-			expect(act).toHaveProperty(['taskId'])
-			expect(act).toHaveProperty(['taskNumber'])
+				expect(act).toHaveProperty(['taskId'])
+				expect(act).toHaveProperty(['taskNumber'])
 		})
-		KBF.tasks.create(maxFeaturesParams).then((act) => {
-			expect(act).toHaveProperty(['taskId'])
-			expect(act).toHaveProperty(['taskNumber'])
-			testTempMaxTaskId = act.taskId
-			console.log(act)
-			console.log('ttest')
-		})
+
+
 	})
 	it.skip('should update task', async () => {
 		const changes: Partial<createTaskParams> = {
@@ -172,10 +163,10 @@ describe('should create / update / delete [tasks / properties]', () => {
 	it.skip('should create subtask', () => {
 		kanbanPost({
 			addParam: 'subtask', taskId: maxFeatuesId,
-			params: {
-				name: 'ADDED SUBTASK',
+			params  : {
+				name    : 'ADDED SUBTASK',
 				finished: false,
-				userId: testUserId,
+				userId  : testUserId,
 			}
 		}).then((act) =>
 			expect(act).toHaveProperty('insertIndex'))
@@ -183,8 +174,8 @@ describe('should create / update / delete [tasks / properties]', () => {
 	it.skip('should update subtasks', () => {
 		kanbanPost({
 			modifyParam: 'subtask',
-			taskId: maxFeatuesId, //todo
-			params: {finished: true}
+			taskId     : maxFeatuesId, //todo
+			params     : {finished: true}
 		})
 	})
 	it.todo('should delete subtask')
@@ -218,7 +209,6 @@ describe('should create / update / delete [tasks / properties]', () => {
 
 	it.todo('should delete task')
 })
-
 describe('should manage time entries', () => {
 
 	it.todo('should get stoppwatch entries')
@@ -230,10 +220,8 @@ describe('should manage time entries', () => {
 	it.todo('should delete manual entries')
 
 })
-
 it.todo('should get users')
 it.todo('should get events')
-
 describe('should manage webhooks', () => {
 	it.todo('should create webhook')
 	it.todo('should update webhook')

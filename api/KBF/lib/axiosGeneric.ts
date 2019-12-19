@@ -2,20 +2,21 @@ import axios from 'axios'
 import {genAPIkey} from './genApiKey'
 
 let API_URL = `https://kanbanflow.com/api/v1/`
-const headers = {
+export const headers = {
 	'Authorization': `Basic ${genAPIkey()}`,
 	'Content-type' : 'application/json'
 }
-export const dispatch = <T>(
+export const dispatch = async <T>(
 	method: 'get' | 'post',
 	path: string | string[],
 	params?: any) => {
 	
-	return axios({
+	const {data} = await axios({
 		method,
 		url: generatePath(path),
-		headers, params
-	}) as unknown as Promise<T>
+		headers, data: params
+	})
+	return data as Promise<T>
 }
 
 const generatePath = (path: string | string[]) =>
