@@ -44,7 +44,7 @@ export async function kanbanPost({params, taskId, addParam, modifyParam,}: Imple
 	
 	const headers = {
 		'Authorization': `Basic ${genAPIkey()}`,
-		'Content-type': 'application/json'
+		'Content-type' : 'application/json'
 		
 	}
 	
@@ -59,22 +59,28 @@ export const KBF = {
 	board: () =>
 		dispatch<Board>('get', 'board'),
 	tasks: {
-		getAll : () =>
+		getAll         : () =>
 			dispatch<Task[]>('get', 'tasks'),
 		getById,
-		getPropertyById: <K extends keyof RequestProps>(taskId: string, property: K) =>
-			dispatch<RequestProps[K][]>('get', ['tasks', taskId, property]),
-		update : (taskId: string, props: Partial<createTaskParams>) =>
+		getPropertyById,
+		update         : (taskId: string, props: Partial<createTaskParams>) =>
 			dispatch<void>('post', ['tasks', taskId], props),
-		create : (params: CreateParams2) =>
+		create         : (params: CreateParams2) =>
 			dispatch<postReply>('post', 'tasks', params)
 	},
 }
 
 function getById(taskIds: string): Promise<Task>
 function getById(taskIds: string[]): Promise<Task[]>
-
 function getById(taskIds: string | string[]) {
 	if (typeof taskIds === 'string') return dispatch<Task>('get', ['tasks', taskIds])
 	return Promise.all([...taskIds.map((id) => dispatch<Task>('get', ['tasks', id]))])
 }
+
+function getPropertyById<K extends keyof RequestProps>(taskIds: string, property: K): Promise<RequestProps[K][]>
+function getPropertyById<K extends keyof RequestProps>(taskIds: string[], property: K): Promise<RequestProps[K]>
+function getPropertyById<K extends keyof RequestProps>(taskIds: string | string[], property: K) {
+	if (typeof taskIds === 'string') return dispatch<RequestProps[K][]>('get', ['tasks', taskIds, property])
+	return Promise.all([...taskIds.map((id) => dispatch<RequestProps[K][]>('get', ['tasks', id, property])).flat()])
+}
+

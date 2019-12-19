@@ -138,6 +138,11 @@ describe('should fetch data', () => {
 		}
 		expect(act[0]).toMatchObject(exp)
 	})
+	it('from several tasks', async () => {
+		KBF.tasks.getPropertyById([maxFeatuesId, minFeatureId], 'comments').then(
+			(act) => expect(act.length).toBe(1)
+		)
+	});
 })
 describe('should create / update / delete [tasks / properties]', () => {
 	let testTempMaxTaskId: Task['_id'] // to delete later

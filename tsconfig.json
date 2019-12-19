@@ -3,14 +3,14 @@
     "strict": true,
 
     "lib": [
-      "es2017"
+      "esnext"
     ],
     "incremental": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
 
     "moduleResolution": "node",
-    "target": "es2017",
+    "target": "esnext",
     "outDir": "lib"
   },
   "exclude": [
