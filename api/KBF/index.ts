@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {type} from 'os'
 import {Mock} from 'ts-mockery'
 import {Board, RequestProps, Task} from '../../types/kanbanflow'
 import {dispatch} from './lib/axiosGeneric'
@@ -71,3 +72,10 @@ export const KBF = {
 	},
 }
 
+function getById(taskIds: string): Promise<Task>
+function getById(taskIds: string[]): Promise<Task[]>
+
+function getById(taskIds: string | string[]) {
+	if (typeof taskIds === 'string') return dispatch<Task>('get', ['tasks', taskIds])
+	return Promise.all([...taskIds.map((id) => dispatch<Task>('get', ['tasks', id]))])
+}

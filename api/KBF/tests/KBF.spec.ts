@@ -68,13 +68,13 @@ describe('should fetch data', () => {
 		expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
 		
 	})
-	it.skip('all tasks on the board', () => {
+	it('all tasks on the board', () => {
 		KBF.tasks.getAll().then((act) =>
 			// snapshot will do, since all types are tested in previous tests.
 			expect(act).toMatchSnapshot())
 	})
-	it.skip('comments', async () => {
-		const act = await getTaskDetailsById(maxFeatuesId, 'comments')
+	it('comments', async () => {
+		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'comments')
 		
 		const exp: Comment = {
 			_id: 'm8q9JVny',
@@ -90,8 +90,8 @@ describe('should fetch data', () => {
 		)
 		
 	})
-	it.skip('labels', async () => {
-		const act = await getTaskDetailsById(maxFeatuesId, 'labels')
+	it('labels', async () => {
+		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'labels')
 		
 		expect(act).toMatchObject(
 			expect.arrayContaining([
@@ -99,8 +99,8 @@ describe('should fetch data', () => {
 			])
 		)
 	})
-	it.skip('dates', async () => {
-		const act = await getTaskDetailsById(maxFeatuesId, 'dates')
+	it('dates', async () => {
+		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'dates')
 		expect(act).toMatchObject(
 			expect.arrayContaining([
 				expect.objectContaining(testDate)
@@ -113,14 +113,14 @@ describe('should fetch data', () => {
 		expect(act[0]).toMatchObject(testSubtasks[0])
 		expect(act[1]).toMatchObject(testSubtasks[1])
 	})
-	it.skip('collaborators', async () => {
-		const act = await getTaskDetailsById(maxFeatuesId, 'collaborators')
+	it('collaborators', async () => {
+		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'collaborators')
 		
 		expect(act).toHaveLength(0)
 		
 	})
-	it.skip('attachments', async () => {
-		const act = await getTaskDetailsById(maxFeatuesId, 'attachments')
+	it('attachments', async () => {
+		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'attachments')
 		const exp: Partial<Attachment> = {
 			// some properties omitted
 			_id: 'QWAnJzYkcu7x',
