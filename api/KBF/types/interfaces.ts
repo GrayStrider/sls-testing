@@ -14,6 +14,8 @@ interface ModifyTask {
 	
 }
 
+export type CreateParams2 = KanbanPost & createTaskParams
+
 export interface CreateParams extends KanbanPost {
 	params: createTaskParams;
 }

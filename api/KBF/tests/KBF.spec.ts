@@ -143,17 +143,21 @@ describe('should create / update / delete [tasks / properties]', () => {
 	let testTempMaxTaskId: Task['_id'] // to delete later
 	let testTempMinTaskId: Task['_id']
 
-	it.skip('should add new task', async () => {
+	it('should add new task', async () => {
 		kanbanPost({params: minFeaturesParams}).then((act) => {
 			expect(act).toHaveProperty(['taskId'])
 			expect(act).toHaveProperty(['taskNumber'])
-			testTempMinTaskId = act.taskId
 		})
-
-		kanbanPost({params: maxFeaturesParams}).then((act) => {
+		KBF.tasks.create(minFeaturesParams).then((act) => {
+			expect(act).toHaveProperty(['taskId'])
+			expect(act).toHaveProperty(['taskNumber'])
+		})
+		KBF.tasks.create(maxFeaturesParams).then((act) => {
 			expect(act).toHaveProperty(['taskId'])
 			expect(act).toHaveProperty(['taskNumber'])
 			testTempMaxTaskId = act.taskId
+			console.log(act)
+			console.log('ttest')
 		})
 	})
 	it.skip('should update task', async () => {

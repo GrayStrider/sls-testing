@@ -3,7 +3,7 @@ import {Mock} from 'ts-mockery'
 import {Board, Task} from '../../types/kanbanflow'
 import {dispatch} from './lib/axiosGeneric'
 import {genAPIkey} from './lib/genApiKey'
-import {AddParams, AddSubtaskParams, CreateParams, createTaskParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
+import {AddParams, AddSubtaskParams, CreateParams, CreateParams2, createTaskParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
 
 export const kanbanGet = async <T>(resource: string, params?: getTasksByColumnParams): Promise<T> => {
@@ -64,7 +64,7 @@ export const KBF = {
 			dispatch<Task>('get', ['tasks', taskId]),
 		update : (taskId: string, props: Partial<createTaskParams>) =>
 			dispatch<void>('post', ['tasks', taskId], props),
-		create : (props: CreateParams) =>
+		create : (props: CreateParams2) =>
 			dispatch<postReply>('post', 'tasks', props)
 	},
 }
