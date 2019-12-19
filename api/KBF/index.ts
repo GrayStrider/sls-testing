@@ -59,13 +59,12 @@ export const KBF = {
 	board: () =>
 		dispatch<Board>('get', 'board'),
 	tasks: {
-		getAll         : () =>
+		getAll: () =>
 			dispatch<Task[]>('get', 'tasks'),
 		getById,
 		getPropertyById,
-		update         : (taskId: string, props: Partial<createTaskParams>) =>
-			dispatch<void>('post', ['tasks', taskId], props),
-		create         : (params: CreateParams2) =>
+		update,
+		create: (params: CreateParams2) =>
 			dispatch<postReply>('post', 'tasks', params)
 	},
 }
@@ -78,9 +77,15 @@ function getById(taskIds: string | string[]) {
 }
 
 function getPropertyById<K extends keyof RequestProps>(taskIds: string, property: K): Promise<RequestProps[K][]>
-function getPropertyById<K extends keyof RequestProps>(taskIds: string[], property: K): Promise<RequestProps[K]>
+function getPropertyById<K extends keyof RequestProps>(taskIds: string[], property: K): Promise<RequestProps[K][]>
 function getPropertyById<K extends keyof RequestProps>(taskIds: string | string[], property: K) {
 	if (typeof taskIds === 'string') return dispatch<RequestProps[K][]>('get', ['tasks', taskIds, property])
 	return Promise.all([...taskIds.map((id) => dispatch<RequestProps[K][]>('get', ['tasks', id, property])).flat()])
 }
 
+function update(taskIds: string, properties: Partial<createTaskParams>): Promise<void>
+function update(taskIds: string[], properties: Partial<createTaskParams>): Promise<void>
+function update(taskIds: string | string[], properties: Partial<createTaskParams>): Promise<void> {
+	if (typeof taskIds === 'string') return dispatch<void>('post', ['tasks', taskIds], properties)
+	return Promise.all([...taskIds.map((id) => dispatch('post', ['tasks', id], properties))]) as unknown as Promise<void>
+}

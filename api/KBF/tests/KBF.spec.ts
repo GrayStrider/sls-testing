@@ -141,34 +141,36 @@ describe('should fetch data', () => {
 	
 	it('from several tasks', () => {
 		KBF.tasks.getPropertyById([maxFeatuesId, minFeatureId], 'comments').then(
-			(act) => expect(act.length).toBe(1)
+			// Comment[][] because of 2 swimlanes
+			(act) => expect(act[0].length).toBe(1)
 		)
-	});
+	})
 })
 describe('should create / update / delete [tasks / properties]', () => {
-	let testTempMaxTaskId: Task['_id'] // to delete later
-	let testTempMinTaskId: Task['_id']
+	let testTempMaxTaskId: string// to delete later
+	let testTempMinTaskId: string
 	
-	it('should add new task',  () => {
+	it('should add new task', () => {
 		KBF.tasks.create(minFeaturesParams).then((act) => {
+			console.log(act)
+			testTempMinTaskId = act.taskId
 			expect(act).toHaveProperty(['taskId'])
 			expect(act).toHaveProperty(['taskNumber'])
-			testTempMinTaskId = act.taskId
 		})
 		
 		KBF.tasks.create(maxFeaturesParams).then((act) => {
+			testTempMaxTaskId = act.taskId
 			expect(act).toHaveProperty(['taskId'])
 			expect(act).toHaveProperty(['taskNumber'])
-			testTempMaxTaskId = act.taskId
 		})
 	})
-	it.skip('should update task', async () => {
+	it('should update task', async () => {
 		const changes: Partial<createTaskParams> = {
 			name: 'CHANGED'
 			// todo
 		}
-		await kanbanPost({params: changes, taskId: testTempMaxTaskId})
-		const result = await getTaskByID(testTempMaxTaskId)
+		await KBF.tasks.update(testTempMaxTaskId, changes)
+		const result = await KBF.tasks.getById(testTempMaxTaskId)
 		expect(result.name).toBe(changes.name)
 	})
 	it.skip('should create subtask', () => {
