@@ -56,7 +56,7 @@ export const KBF = {
 		dispatch<Board>('get', 'board'),
 	tasks: {
 		getAll : () =>
-			Mock.of<Promise<Task[]>>(),
+			dispatch<Task[]>('get', 'tasks'),
 		getById: (taskId: string) =>
 			dispatch<Task>('get', ['tasks', taskId]),
 		update : (taskId: string, props: Partial<createTaskParams>) =>
