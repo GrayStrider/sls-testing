@@ -9,15 +9,21 @@ import mock = jest.mock
 
 process.env.NOCK_ENABLED = 'true'
 
-const initializeNock = (response: {}) => {
+const initializeNock = (response: any[] | object) => {
 	if (process.env.NOCK_ENABLED) {
 		nock(/.*/)
 			.get(/.*/)
 			.times(Infinity)
 			.reply(200, response)
-		nock.cleanAll()
+		
+		nock(/.*/)
+			.post(/.*/)
+			.times(Infinity)
+			.reply(200, response)
 	}
 }
+
+afterEach(() => nock.cleanAll())
 
 describe('should fetch data', () => {
 	it('valid board data', async () => {
@@ -25,16 +31,19 @@ describe('should fetch data', () => {
 		const res = await KBF.board()
 		expect(res).toMatchObject(testBoard)
 	})
-	it('a single task by id', async () => {
-		initializeNock(taskMaxFeatures)
-		await expect(KBF.tasks.getById(maxFeatuesId))
-			.resolves.toMatchObject(taskMaxFeatures)
+	it('a single task by id (min)', async () => {
 		initializeNock(taskMinFeatures)
 		await expect(KBF.tasks.getById(minFeaturesId))
 			.resolves.toMatchObject(taskMinFeatures)
 	})
+		it('a single task by id (max)', async () => {
+		initializeNock(taskMaxFeatures)
+		await expect(KBF.tasks.getById(maxFeatuesId))
+			.resolves.toMatchObject(taskMaxFeatures)
+	})
+	
+	
 	it('multiple tasks by id', async () => {
-		initializeNock([taskMaxFeatures, taskMinFeatures])
 		const act = await KBF.tasks.getById([maxFeatuesId, minFeaturesId])
 		expect(act[0]).toMatchObject(taskMaxFeatures)
 		expect(act[1]).toMatchObject(taskMinFeatures)
@@ -97,23 +106,24 @@ describe('should fetch data', () => {
 			.toMatchSnapshot()
 	})
 	it('comments', async () => {
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'comments')
-		
-		const exp: Comment = {
+		const commentExp: Comment = {
 			_id             : 'm8q9JVny',
 			text            : 'test',
 			authorUserId    : '5b2a3ad796a22ce0d687f7f8181232b1',
 			createdTimestamp: '2019-11-01T04:21:31.774Z'
 		}
+		initializeNock([commentExp])
+		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'comments')
 		
 		expect(act).toMatchObject(
 			expect.arrayContaining([
-				expect.objectContaining(exp)
+				expect.objectContaining(commentExp)
 			])
 		)
 		
 	})
 	it('labels', async () => {
+		initializeNock([testLabel])
 		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'labels')
 		
 		expect(act).toMatchObject(
@@ -123,6 +133,7 @@ describe('should fetch data', () => {
 		)
 	})
 	it('dates', async () => {
+		initializeNock([testDate])
 		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'dates')
 		expect(act).toMatchObject(
 			expect.arrayContaining([
@@ -132,18 +143,18 @@ describe('should fetch data', () => {
 		)
 	})
 	it('subtasks', async () => {
+		initializeNock(testSubtasks)
 		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'subtasks')
 		expect(act[0]).toMatchObject(testSubtasks[0])
 		expect(act[1]).toMatchObject(testSubtasks[1])
 	})
 	it('collaborators', async () => {
+		initializeNock([])
 		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'collaborators')
-		
-		expect(act).toHaveLength(0)
+		expect(act).toStrictEqual([])
 		
 	})
 	it('attachments', async () => {
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'attachments')
 		const exp: Partial<Attachment> = {
 			// some properties omitted
 			_id             : 'QWAnJzYkcu7x',
@@ -153,6 +164,8 @@ describe('should fetch data', () => {
 			mimeType        : 'image/jpeg',
 			createdTimestamp: '2019-11-01T12:37:01.675Z',
 		}
+		initializeNock([exp])
+		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'attachments')
 		expect(act[0]).toMatchObject(exp)
 	})
 	
@@ -168,78 +181,75 @@ describe('should create / update / delete [tasks / properties]', () => {
 	let testTempMinTaskId: string
 	
 	it('should add new task', async () => {
-		initializeNock(minFeaturesParams)
 		const actMin = await KBF.tasks.create(minFeaturesParams)
 		testTempMinTaskId = actMin.taskId
-		expect(actMin).toHaveProperty(['taskId'])
-		expect(actMin).toHaveProperty(['taskNumber'])
+		expect(Object.keys(actMin)).toStrictEqual(['taskId', 'taskNumber'])
+
+		
+		const actMax = await KBF.tasks.create(maxFeaturesParams)
+		testTempMaxTaskId = actMin.taskId
+		expect(Object.keys(actMax)).toStrictEqual(['taskId', 'taskNumber'])
 	})
 	
-	KBF.tasks.create(maxFeaturesParams).then((act) => {
-		testTempMaxTaskId = act.taskId
-		expect(Object.keys(act)).toEqual(['taskId', 'taskNumber'])
-		expect(act).toHaveProperty(['taskId'])
-		expect(act).toHaveProperty(['taskNumber'])
-	})
-
-it('should update task', async () => {
-	const changes: Partial<createTaskParams> = {
-		name: 'CHANGED'
-		// todo
-	}
-	await KBF.tasks.update(testTempMaxTaskId, changes)
-	const result = await KBF.tasks.getById(testTempMaxTaskId)
-	expect(result.name).toBe(changes.name)
-})
-it.skip('should create subtask', () => {
-	kanbanPost({
-		addParam: 'subtask', taskId: maxFeatuesId,
-		params  : {
-			name    : 'ADDED SUBTASK',
-			finished: false,
-			userId  : testUserId,
+	it('should update task', async () => {
+		const changes: Partial<createTaskParams> = {
+			name: 'CHANGED'
+			// todo
 		}
-	}).then((act) =>
-		expect(act).toHaveProperty('insertIndex'))
-})
-it.skip('should update subtasks', () => {
-	kanbanPost({
-		modifyParam: 'subtask',
-		taskId     : maxFeatuesId, //todo
-		params     : {finished: true}
+		await KBF.tasks.update(testTempMaxTaskId, changes)
+		const result = await KBF.tasks.getById(testTempMaxTaskId)
+		expect(result.name).toBe(changes.name)
 	})
+	it.skip('should create subtask', () => {
+		kanbanPost({
+			addParam: 'subtask', taskId: maxFeatuesId,
+			params  : {
+				name    : 'ADDED SUBTASK',
+				finished: false,
+				userId  : testUserId,
+			}
+		}).then((act) =>
+			expect(act).toHaveProperty('insertIndex'))
+	})
+	it.skip('should update subtasks', () => {
+		kanbanPost({
+			modifyParam: 'subtask',
+			taskId     : maxFeatuesId, //todo
+			params     : {finished: true}
+		})
+	})
+	it.todo('should delete subtask')
+	
+	it.todo('should create label')
+	it.todo('should update label')
+	it.todo('should delete label')
+	
+	
+	it.todo('should create / update date')
+	it.todo('should create / update date')
+	it.todo('should delete date')
+	
+	
+	it.todo('should create add collaborator')
+	it.todo('should delete collaborator')
+	
+	
+	it.todo('should create comment')
+	it.todo('update comment')
+	it.todo('should delete comment')
+	
+	
+	it.todo('should add attachment')
+	it.todo('should delete attachment')
+	
+	
+	it.todo('should add manual time entry')
+	it.todo('should update manual time entry')
+	it.todo('should delete manual time entry')
+	
+	it.todo('should delete task')
 })
-it.todo('should delete subtask')
 
-it.todo('should create label')
-it.todo('should update label')
-it.todo('should delete label')
-
-
-it.todo('should create / update date')
-it.todo('should create / update date')
-it.todo('should delete date')
-
-
-it.todo('should create add collaborator')
-it.todo('should delete collaborator')
-
-
-it.todo('should create comment')
-it.todo('update comment')
-it.todo('should delete comment')
-
-
-it.todo('should add attachment')
-it.todo('should delete attachment')
-
-
-it.todo('should add manual time entry')
-it.todo('should update manual time entry')
-it.todo('should delete manual time entry')
-
-it.todo('should delete task')
-})
 describe('should manage time entries', () => {
 	
 	it.todo('should get stoppwatch entries')

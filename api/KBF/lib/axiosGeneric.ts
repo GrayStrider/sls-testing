@@ -1,6 +1,6 @@
 import axios from 'axios'
+import {KBF} from '../index'
 import {genAPIkey} from './genApiKey'
-
 export const API_URL = `https://kanbanflow.com/api/v1/`
 const headers = {
 	'Authorization': `Basic ${genAPIkey()}`,
@@ -22,3 +22,6 @@ export const dispatch = async <T>(
 
 const generatePath = (path: string | string[]) =>
 	API_URL + (typeof path === 'string' ? path : path.join('/'))
+
+// KBF.tasks.getAll()
+// 	.then(console.log)
