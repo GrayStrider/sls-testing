@@ -3,6 +3,7 @@ import {Mock} from 'ts-mockery'
 import {Board, OtherTaskProperties, RequestProps, Task} from '../../types/kanbanflow'
 import {dispatch} from './lib/axiosGeneric'
 import {genAPIkey} from './lib/genApiKey'
+import {testSubtasks} from './tests/mocks'
 import {AddParams, AddSubtaskParams, CreateParams, CreateParams2, CreateTaskParams, ImplementationParams, ModifySubtaskParams, postReply, UpdateParams} from './types/interfaces'
 import {getTasksByColumnParams} from './types/requests'
 
@@ -58,12 +59,12 @@ export const KBF = {
 	board: () =>
 		dispatch<Board>('get', 'board'),
 	tasks: {
-		getAll     : () =>
+		getAll: () =>
 			dispatch<Task[]>('get', 'tasks'),
 		get,
 		getProperty,
 		update,
-		create     : (params: CreateParams2) =>
+		create: (params: CreateParams2) =>
 			dispatch<postReply>('post', 'tasks', params),
 		deleteById
 	},
@@ -96,23 +97,31 @@ function update(taskIds: string | string[], property: Partial<CreateTaskParams>)
 function deleteById(taskIds: string): Promise<void>
 function deleteById(taskIds: string[]): Promise<void>
 function deleteById(taskIds: string | string[]): Promise<void> {
-	if (typeof taskIds === 'string') return dispatch<void>('delete', ['tasks', taskIds], )
+	if (typeof taskIds === 'string') return dispatch<void>('delete', ['tasks', taskIds],)
 	
-	return Promise.all([...taskIds.map((id) => dispatch('delete', ['tasks', id], ))]) as unknown as Promise<void>
+	return Promise.all([...taskIds.map((id) => dispatch('delete', ['tasks', id],))]) as unknown as Promise<void>
 }
 
 
-type Deletable = Pick<CreateTaskParams, 'subTasks' | 'labels' | 'dates' | 'collaborators'> & Pick<OtherTaskProperties, 'comments' | 'attachments'>
-function deleteProperty(taskIds: string, property: keyof CreateTaskParams): Promise<void>
-function deleteProperty(taskIds: string[], property: keyof CreateTaskParams): Promise<void>
-function deleteProperty(taskIds: string | string[], property: keyof CreateTaskParams): Promise<void> {
-	// const pathModifiers: Record<string, string> = {
-	// 	subTasks: 'by-name',
-	// 	labels: 'by-name',
-	// 	dates: 'by-target-column-id'
-	// }
+type Deletable = 'subTask' | 'label' | 'date' | 'collaborator' | 'comment' | 'attachment'
+
+function deleteProperty(taskIds: string, property: Deletable, key: string): Promise<void>
+function deleteProperty(taskIds: string[], property: Deletable, key: string): Promise<void>
+function deleteProperty(taskIds: string | string[], property: Deletable, key: string): Promise<void> {
+	// @ts-ignore
+	const pathModifiers: Record<Deletable, {path: string[], type: any}> = {
+		subTask: {path: ['subtasks', 'by-name'], type: 'subtask name'},
+	}
+	
+	interface pathModifiers {
+		subTask: SubtaskName
+	}
+	
+	type SubtaskName = string
+	
+	dispatch('delete', [...pathModifiers[property].path, key as pathModifiers['subTask']])
 	
 	return new Promise<void>((resolve, reject) => resolve)
 	
-
+	
 }
