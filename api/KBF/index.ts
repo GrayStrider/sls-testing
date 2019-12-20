@@ -58,14 +58,15 @@ export const KBF = {
 	board: () =>
 		dispatch<Board>('get', 'board'),
 	tasks: {
-		getAll     : () =>
+		getAll: () =>
 			dispatch<Task[]>('get', 'tasks'),
 		get,
 		getProperty,
 		update,
-		create     : (params: CreateParams2) =>
+		create: (params: CreateParams2) =>
 			dispatch<postReply>('post', 'tasks', params),
-		deleteById
+		deleteById,
+		deleteProperty
 	},
 	
 }
@@ -96,23 +97,24 @@ function update(taskIds: string | string[], property: Partial<CreateTaskParams>)
 function deleteById(taskIds: string): Promise<void>
 function deleteById(taskIds: string[]): Promise<void>
 function deleteById(taskIds: string | string[]): Promise<void> {
-	if (typeof taskIds === 'string') return dispatch<void>('delete', ['tasks', taskIds], )
+	if (typeof taskIds === 'string') return dispatch<void>('delete', ['tasks', taskIds],)
 	
-	return Promise.all([...taskIds.map((id) => dispatch('delete', ['tasks', id], ))]) as unknown as Promise<void>
+	return Promise.all([...taskIds.map((id) => dispatch('delete', ['tasks', id],))]) as unknown as Promise<void>
 }
 
 
-type Deletable = Pick<CreateTaskParams, 'subTasks' | 'labels' | 'dates' | 'collaborators'> & Pick<OtherTaskProperties, 'comments' | 'attachments'>
-function deleteProperty(taskIds: string, property: keyof CreateTaskParams): Promise<void>
-function deleteProperty(taskIds: string[], property: keyof CreateTaskParams): Promise<void>
-function deleteProperty(taskIds: string | string[], property: keyof CreateTaskParams): Promise<void> {
+type Deletable = 'subtask' | 'label' | 'date' | 'collaborator' | 'comment' | 'attachment'
+
+function deleteProperty(taskIds: string, property: 'subtask', subtaskName: string): Promise<void>
+
+function deleteProperty(taskIds: string, property: 'subtask', subtaskName?: string): Promise<void> {
 	// const pathModifiers: Record<string, string> = {
 	// 	subTasks: 'by-name',
 	// 	labels: 'by-name',
 	// 	dates: 'by-target-column-id'
 	// }
 	
-	return new Promise<void>((resolve, reject) => resolve)
+	if (property === 'subtask' && subtaskName) return dispatch('delete', ['subtasks', 'by-index', subtaskName])
 	
-
+	throw 'end'
 }

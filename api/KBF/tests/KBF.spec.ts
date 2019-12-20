@@ -211,12 +211,13 @@ describe('should create / update / delete [tasks / properties]', () => {
 		})
 		
 	})
+	const sub: SubTask = {
+		name    : 'UPDATED SUBTASK',
+		finished: true,
+		userId  : testUserId,
+	}
 	it('should update subTasks', async () => {
-		const sub: SubTask = {
-			name    : 'UPDATED SUBTASK',
-			finished: true,
-			userId  : testUserId,
-		}
+		
 		await KBF.tasks.update(testTempMaxTaskId, {
 			subTasks: [sub]
 		})
@@ -227,10 +228,23 @@ describe('should create / update / delete [tasks / properties]', () => {
 	// etc
 	
 	it('should delete subtask', async () => {
-		await KBF.tasks.deleteById(testTempMaxTaskId)
+		await KBF.tasks.deleteProperty(testTempMaxTaskId, 'subtask', sub.name)
+		const act = await KBF.tasks.get(testTempMaxTaskId)
+		expect(act.subTasks!.length).toBe(0)
 	})
 	
 	it.todo('should delete task')
+})
+
+
+
+it('should delete subtask 2', async () => {
+	const task = await KBF.tasks.get('Z2B3QyUJ')
+	console.log(task)
+	
+	// await KBF.tasks.deleteProperty('Z2B3QyUJ', 'subtask', 'UPDATED SUBTASK')
+	// const act = await KBF.tasks.get('Z2B3QyUJ')
+	// expect(act.subTasks!.length).toBe(0)
 })
 
 describe('should manage time entries', () => {
