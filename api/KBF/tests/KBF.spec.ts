@@ -233,7 +233,11 @@ describe('should create / update / delete [tasks / properties]', () => {
 		expect(act.subTasks).toBe(undefined)
 	})
 	
-	it.todo('should delete task')
+	it('should delete task', async () => {
+		await KBF.tasks.deleteById(testTempMaxTaskId)
+		await KBF.tasks.deleteById(testTempMinTaskId)
+		
+	})
 })
 
 
