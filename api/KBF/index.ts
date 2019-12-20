@@ -114,7 +114,7 @@ function deleteProperty(taskIds: string, property: 'subtask', subtaskName?: stri
 	// 	dates: 'by-target-column-id'
 	// }
 	
-	if (property === 'subtask' && subtaskName) return dispatch('delete', ['subtasks', 'by-index', subtaskName])
+	if (property === 'subtask' && subtaskName) return dispatch('delete', ['tasks', taskIds, 'subtasks', 'by-name', subtaskName])
 	
 	throw 'end'
 }
