@@ -39,7 +39,7 @@ export interface RequestProps {
 	dates: Date[]
 	collaborators: Collaborator[]
 	attachments: Attachment[]
-	subtasks: SubTask[]
+	subTasks: SubTask[]
 }
 
 interface Comment {
@@ -78,8 +78,8 @@ export interface Task {
 	dates?: Date[]
 	// Only included if the column the task is in is date grouped. Format is YYYY-MM-DD. Example: 2015-12-31.
 	groupingDate?: string | null | ''
-	// The subtasks of the task. Only included if there are any items.
-	subtasks?: SubTask[]
+	// The subTasks of the task. Only included if there are any items.
+	subTasks?: SubTask[]
 	// The labels of the task. Only included if there are any items
 	labels?: Label[]
 	// The collaborators of the task. Only included if there are any items.

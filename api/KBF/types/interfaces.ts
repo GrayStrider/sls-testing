@@ -26,7 +26,7 @@ export interface UpdateParams extends KanbanPost, ModifyTask {
 
 type AddOrModifyPropTypes = 'subtask'
 export const AddParams: { [key in AddOrModifyPropTypes]: string } = {
-	subtask: 'subtasks'
+	subtask: 'subTasks'
 }
 
 export interface AddSubtaskParams extends KanbanPost, ModifyTask {

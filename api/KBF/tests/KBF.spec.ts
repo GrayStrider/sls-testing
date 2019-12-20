@@ -34,19 +34,19 @@ describe('should fetch data', () => {
 	it('a single task by id (min)', async () => {
 		initializeNock(taskMinFeatures)
 		await expect(KBF.tasks.get(minFeaturesId))
-			.resolves.toMatchObject(taskMinFeatures)
+			.resolves.toStrictEqual(taskMinFeatures)
 	})
 	it('a single task by id (max)', async () => {
 		initializeNock(taskMaxFeatures)
 		await expect(KBF.tasks.get(maxFeatuesId))
-			.resolves.toMatchObject(taskMaxFeatures)
+			.resolves.toStrictEqual(taskMaxFeatures)
 	})
 	
 	
 	it('multiple tasks by id', async () => {
 		const act = await KBF.tasks.get([maxFeatuesId, minFeaturesId])
-		expect(act[0]).toMatchObject(taskMaxFeatures)
-		expect(act[1]).toMatchObject(taskMinFeatures)
+		expect(act[0]).toStrictEqual(taskMaxFeatures)
+		expect(act[1]).toStrictEqual(taskMinFeatures)
 	})
 	it.skip('all tasks in the column', async () => {
 		const expTasks: Tasks = [
@@ -74,8 +74,8 @@ describe('should fetch data', () => {
 		
 		const actById: Tasks =
 			await getTasksByColumn({columnId: 'Uqsc6jy2Cbl9'})
-		expect(actById[0]).toMatchObject(expTasks[0])
-		expect(actById[1]).toMatchObject(expTasks[1])
+		expect(actById[0]).toStrictEqual(expTasks[0])
+		expect(actById[1]).toStrictEqual(expTasks[1])
 		
 		const actByName: Tasks =
 			await getTasksByColumn({columnName: 'TEST'})
@@ -98,7 +98,7 @@ describe('should fetch data', () => {
 		])
 		const actByColumnAndSwimlane =
 			await getTasksByColumnAndSwimlane({columnIndex: 1, swimlaneId: 'V9eKUkwDY8Vz'})
-		expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
+		expect(actByColumnAndSwimlane).toStrictEqual(expByColumnAndSwimlane)
 		
 	})
 	it('all tasks on the board', async () => {
@@ -115,7 +115,7 @@ describe('should fetch data', () => {
 		initializeNock([commentExp])
 		const act = await KBF.tasks.getProperty(maxFeatuesId, 'comments')
 		
-		expect(act).toMatchObject(
+		expect(act).toStrictEqual(
 			expect.arrayContaining([
 				expect.objectContaining(commentExp)
 			])
@@ -126,7 +126,7 @@ describe('should fetch data', () => {
 		initializeNock([testLabel])
 		const act = await KBF.tasks.getProperty(maxFeatuesId, 'labels')
 		
-		expect(act).toMatchObject(
+		expect(act).toStrictEqual(
 			expect.arrayContaining([
 				expect.objectContaining(testLabel)
 			])
@@ -135,18 +135,18 @@ describe('should fetch data', () => {
 	it('dates', async () => {
 		initializeNock([testDate])
 		const act = await KBF.tasks.getProperty(maxFeatuesId, 'dates')
-		expect(act).toMatchObject(
+		expect(act).toStrictEqual(
 			expect.arrayContaining([
 				expect.objectContaining(testDate)
 			
 			])
 		)
 	})
-	it('subtasks', async () => {
+	it('subTasks', async () => {
 		initializeNock(testSubtasks)
-		const act = await KBF.tasks.getProperty(maxFeatuesId, 'subtasks')
-		expect(act[0]).toMatchObject(testSubtasks[0])
-		expect(act[1]).toMatchObject(testSubtasks[1])
+		const act = await KBF.tasks.getProperty(maxFeatuesId, 'subTasks')
+		expect(act[0]).toStrictEqual(testSubtasks[0])
+		expect(act[1]).toStrictEqual(testSubtasks[1])
 	})
 	it('collaborators', async () => {
 		initializeNock([])
@@ -166,7 +166,7 @@ describe('should fetch data', () => {
 		}
 		initializeNock([exp])
 		const act = await KBF.tasks.getProperty(maxFeatuesId, 'attachments')
-		expect(act[0]).toMatchObject(exp)
+		expect(act[0]).toStrictEqual(exp)
 	})
 	
 	it('from several tasks', async () => {
@@ -207,22 +207,22 @@ describe('should create / update / delete [tasks / properties]', () => {
 			userId  : testUserId,
 		}
 		await KBF.tasks.update(testTempMaxTaskId, {
-			subtasks: [sub]
+			subTasks: [sub]
 		})
 		
 	})
-	it('should update subtasks', async () => {
+	it('should update subTasks', async () => {
 		const sub: SubTask = {
 			name    : 'UPDATED SUBTASK',
 			finished: true,
 			userId  : testUserId,
 		}
 		await KBF.tasks.update(testTempMaxTaskId, {
-			subtasks: [sub]
+			subTasks: [sub]
 		})
 		
-		KBF.tasks.getProperty(testTempMaxTaskId, 'subtasks').then((res) =>
-			expect(res[0]).toMatchObject(sub))
+		KBF.tasks.getProperty(testTempMaxTaskId, 'subTasks').then((res) =>
+			expect(res[0]).toStrictEqual(sub))
 	})
 	// etc
 	
@@ -262,5 +262,5 @@ it('should return mock response', async () => {
 		return
 	}
 	const res = await dispatch('get', 'test')
-	expect(res).toMatchObject({test: 'test123'})
+	expect(res).toStrictEqual({test: 'test123'})
 })

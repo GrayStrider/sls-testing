@@ -25,7 +25,7 @@ export const taskMaxFeatures: Task = {
 			dueTimestampLocal: '2019-11-01T17:00:00+11:00'
 		}
 	],
-	subtasks  : [
+	subTasks  : [
 		{
 			name: 'sub1',
 			finished: false,
@@ -142,7 +142,7 @@ export const maxFeaturesParams: CreateTaskParams = {
 	pointsEstimate      : 100.99,
 	groupingDate        : null,
 	dates               : [testDate],
-	subtasks            : [testSubtasks[0]],
+	subTasks            : [testSubtasks[0]],
 	labels              : [testLabel],
 	collaborators       : []
 }

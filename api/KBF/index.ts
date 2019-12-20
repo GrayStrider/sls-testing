@@ -102,12 +102,12 @@ function deleteById(taskIds: string | string[]): Promise<void> {
 }
 
 
-type Deletable = Pick<CreateTaskParams, 'subtasks' | 'labels' | 'dates' | 'collaborators'> & Pick<OtherTaskProperties, 'comments' | 'attachments'>
+type Deletable = Pick<CreateTaskParams, 'subTasks' | 'labels' | 'dates' | 'collaborators'> & Pick<OtherTaskProperties, 'comments' | 'attachments'>
 function deleteProperty(taskIds: string, property: keyof CreateTaskParams): Promise<void>
 function deleteProperty(taskIds: string[], property: keyof CreateTaskParams): Promise<void>
 function deleteProperty(taskIds: string | string[], property: keyof CreateTaskParams): Promise<void> {
 	// const pathModifiers: Record<string, string> = {
-	// 	subtasks: 'by-name',
+	// 	subTasks: 'by-name',
 	// 	labels: 'by-name',
 	// 	dates: 'by-target-column-id'
 	// }
