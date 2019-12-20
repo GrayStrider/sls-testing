@@ -1,8 +1,40 @@
+import nock from 'nock'
 import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {kanbanPost, KBF} from '../index'
+import {API_URL, dispatch} from '../lib/axiosGeneric'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
 import {maxFeatuesId, maxFeaturesParams, minFeatureId, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
+
+process.env.NOCK_ENABLED = 'true'
+
+const nockCases = [
+	['board', testBoard],
+	['test', {test: 'test123'}]
+]
+
+beforeEach(() => {
+	if (process.env.NOCK_ENABLED) {
+		nockCases
+			.forEach((value) =>
+				nock(API_URL)
+					.get(`/${value[0]}` as string)
+					.delay(500)
+					.reply(200, value[1])
+			)
+	}
+})
+
+
+it('should return mock response if nock is enabled', async () => {
+	if (!process.env.NOCK_ENABLED) {
+		console.log('[Nock is disabled, testing against live API]')
+		return
+	}
+	console.log('[Nock is enabled, testing against mock API]')
+	const res = await dispatch('get', 'test')
+	expect(res).toMatchObject({test: 'test123'})
+})
 
 describe('should fetch data', () => {
 	it('valid board data', () => {
