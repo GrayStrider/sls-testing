@@ -45,7 +45,7 @@ export const taskMaxFeatures: Task = {
 		}
 	]
 }
-export const taskMinFeatues: Task = {
+export const taskMinFeatures: Task = {
 	_id: 'hh6RHiEw',
 	name: 'test_task',
 	description: '',
@@ -58,7 +58,7 @@ export const taskMinFeatues: Task = {
 	groupingDate: ''
 }
 export const maxFeatuesId = 'hia9zFNn'
-export const minFeatureId = 'hh6RHiEw'
+export const minFeaturesId = 'hh6RHiEw'
 
 export const testColumnId = 'Uqsc6jy2Cbl9'
 export const testSwimlaneId = 'V8pP3mn7NcSG'

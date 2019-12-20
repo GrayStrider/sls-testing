@@ -4,57 +4,40 @@ import {kanbanPost, KBF} from '../index'
 import {API_URL, dispatch} from '../lib/axiosGeneric'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
-import {maxFeatuesId, maxFeaturesParams, minFeatureId, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
+import {maxFeatuesId, maxFeaturesParams, minFeaturesId, minFeaturesParams, taskMaxFeatures, taskMinFeatures, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
 import mock = jest.mock
 
-// process.env.NOCK_ENABLED = 'true'
+process.env.NOCK_ENABLED = 'true'
 
 const nockCases = [
 	['board', testBoard],
 	['test', {test: 'test123'}]
 ]
 
-beforeAll(() => {
-	if (process.env.NOCK_ENABLED) {
-		console.log('[Nock is enabled, testing against mock API]')
-		nockCases
-			.forEach((value) =>
-				nock(API_URL)
-					.get(`/${value[0]}` as string)
-					.delay(500)
-					.reply(200, value[1])
-			)
-	} else console.log('[Nock is disabled, testing against live API]')
-})
-
-let mockReply: {};
-beforeEach(() => {
+const initializeNock = (response: {}) => {
 	if (process.env.NOCK_ENABLED) {
 		nock(/.*/)
 			.get(/.*/)
-			.reply(200, mockReply)
+			.reply(200, response)
 	}
-})
-afterEach(() => {
-	mockReply = {error: 'reply wasn\'t set, check your tests'}
-})
+}
 
 describe('should fetch data', () => {
 	it('valid board data', async () => {
+		initializeNock(testBoard)
 		const res = await KBF.board()
-		mockReply = testBoard
 		expect(res).toMatchObject(testBoard)
 	})
-	it('a single task by id', () => {
-		KBF.tasks.getById(maxFeatuesId).then((act) =>
-			expect(act).toMatchObject(taskMaxFeatures))
-		KBF.tasks.getById('hh6RHiEw').then((act) =>
-			expect(act).toMatchObject(taskMinFeatues))
+	it('a single task by id', async () => {
+		await expect(KBF.tasks.getById(maxFeatuesId))
+			.resolves.toMatchObject(taskMaxFeatures)
+		await expect(KBF.tasks.getById(minFeaturesId))
+			.resolves.toMatchObject(taskMinFeatures)
 	})
 	it('multiple tasks by id', () => {
-		KBF.tasks.getById([maxFeatuesId, minFeatureId]).then((act) => {
+		KBF.tasks.getById([maxFeatuesId, minFeaturesId]).then((act) => {
 			expect(act[0]).toMatchObject(taskMaxFeatures)
-			expect(act[1]).toMatchObject(taskMinFeatues)
+			expect(act[1]).toMatchObject(taskMinFeatures)
 		})
 	})
 	it.skip('all tasks in the column', async () => {
@@ -63,7 +46,7 @@ describe('should fetch data', () => {
 				columnId    : 'Uqsc6jy2Cbl9',
 				columnName  : 'TEST',
 				tasksLimited: false,
-				tasks       : [taskMinFeatues, taskMaxFeatures],
+				tasks       : [taskMinFeatures, taskMaxFeatures],
 				swimlaneId  : 'V8pP3mn7NcSG',
 				swimlaneName: 'A',
 			},
@@ -175,11 +158,10 @@ describe('should fetch data', () => {
 		expect(act[0]).toMatchObject(exp)
 	})
 	
-	it('from several tasks', () => {
-		KBF.tasks.getPropertyById([maxFeatuesId, minFeatureId], 'comments').then(
-			// Comment[][] because of 2 swimlanes
-			(act) => expect(act[0].length).toBe(1)
-		)
+	it('from several tasks', async () => {
+		initializeNock([['comment']])
+		const res = await KBF.tasks.getPropertyById([maxFeatuesId, minFeaturesId], 'comments')
+		expect(res[0].length).toBe(1)
 	})
 })
 
