@@ -1,5 +1,5 @@
 import nock from 'nock'
-import {Attachment, Comment, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
+import {Attachment, Comment, SubTask, Task, Tasks, TasksBySwimlane} from '../../../types/kanbanflow'
 import {kanbanPost, KBF} from '../index'
 import {API_URL, dispatch} from '../lib/axiosGeneric'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
@@ -36,7 +36,7 @@ describe('should fetch data', () => {
 		await expect(KBF.tasks.getById(minFeaturesId))
 			.resolves.toMatchObject(taskMinFeatures)
 	})
-		it('a single task by id (max)', async () => {
+	it('a single task by id (max)', async () => {
 		initializeNock(taskMaxFeatures)
 		await expect(KBF.tasks.getById(maxFeatuesId))
 			.resolves.toMatchObject(taskMaxFeatures)
@@ -184,68 +184,49 @@ describe('should create / update / delete [tasks / properties]', () => {
 		const actMin = await KBF.tasks.create(minFeaturesParams)
 		testTempMinTaskId = actMin.taskId
 		expect(Object.keys(actMin)).toStrictEqual(['taskId', 'taskNumber'])
-
+		
 		
 		const actMax = await KBF.tasks.create(maxFeaturesParams)
-		testTempMaxTaskId = actMin.taskId
+		testTempMaxTaskId = actMax.taskId
 		expect(Object.keys(actMax)).toStrictEqual(['taskId', 'taskNumber'])
 	})
 	
 	it('should update task', async () => {
 		const changes: Partial<createTaskParams> = {
 			name: 'CHANGED'
-			// todo
 		}
 		await KBF.tasks.update(testTempMaxTaskId, changes)
 		const result = await KBF.tasks.getById(testTempMaxTaskId)
 		expect(result.name).toBe(changes.name)
 	})
-	it.skip('should create subtask', () => {
-		kanbanPost({
-			addParam: 'subtask', taskId: maxFeatuesId,
-			params  : {
-				name    : 'ADDED SUBTASK',
-				finished: false,
-				userId  : testUserId,
-			}
-		}).then((act) =>
-			expect(act).toHaveProperty('insertIndex'))
-	})
-	it.skip('should update subtasks', () => {
-		kanbanPost({
-			modifyParam: 'subtask',
-			taskId     : maxFeatuesId, //todo
-			params     : {finished: true}
+	
+	it('should create subtask', async () => {
+		const sub: SubTask = {
+			name    : 'ADDED SUBTASK',
+			finished: false,
+			userId  : testUserId,
+		}
+		await KBF.tasks.update(testTempMaxTaskId, {
+			subTasks: [sub]
 		})
+		
 	})
+	it('should update subtasks', async () => {
+		const sub: SubTask = {
+			name    : 'UPDATED SUBTASK',
+			finished: true,
+			userId  : testUserId,
+		}
+		await KBF.tasks.update(testTempMaxTaskId, {
+			subTasks: [sub]
+		})
+		
+		KBF.tasks.getPropertyById(testTempMaxTaskId, 'subtasks').then((res) =>
+			expect(res[0]).toMatchObject(sub))
+	})
+	// etc
+	
 	it.todo('should delete subtask')
-	
-	it.todo('should create label')
-	it.todo('should update label')
-	it.todo('should delete label')
-	
-	
-	it.todo('should create / update date')
-	it.todo('should create / update date')
-	it.todo('should delete date')
-	
-	
-	it.todo('should create add collaborator')
-	it.todo('should delete collaborator')
-	
-	
-	it.todo('should create comment')
-	it.todo('update comment')
-	it.todo('should delete comment')
-	
-	
-	it.todo('should add attachment')
-	it.todo('should delete attachment')
-	
-	
-	it.todo('should add manual time entry')
-	it.todo('should update manual time entry')
-	it.todo('should delete manual time entry')
 	
 	it.todo('should delete task')
 })

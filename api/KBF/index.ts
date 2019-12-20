@@ -86,5 +86,6 @@ function update(taskIds: string, properties: Partial<createTaskParams>): Promise
 function update(taskIds: string[], properties: Partial<createTaskParams>): Promise<void>
 function update(taskIds: string | string[], properties: Partial<createTaskParams>): Promise<void> {
 	if (typeof taskIds === 'string') return dispatch<void>('post', ['tasks', taskIds], properties)
+	
 	return Promise.all([...taskIds.map((id) => dispatch('post', ['tasks', id], properties))]) as unknown as Promise<void>
 }
