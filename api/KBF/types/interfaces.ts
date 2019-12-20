@@ -1,7 +1,7 @@
 import {SubTask, Task, TaskNumber} from '../../../types/kanbanflow'
 
 export type postReply = { taskId: string, taskNumber: TaskNumber }
-export type createTaskParams =
+export type CreateTaskParams =
 	Omit<Task, '_id' | 'totalSecondsSpent' | 'color' | 'description'>
 	& Partial<Pick<Task, 'color' | 'description'>>
 
@@ -14,14 +14,14 @@ interface ModifyTask {
 	
 }
 
-export type CreateParams2 = KanbanPost & createTaskParams
+export type CreateParams2 = KanbanPost & CreateTaskParams
 
 export interface CreateParams extends KanbanPost {
-	params: createTaskParams;
+	params: CreateTaskParams;
 }
 
 export interface UpdateParams extends KanbanPost, ModifyTask {
-	params: Partial<createTaskParams>;
+	params: Partial<CreateTaskParams>;
 }
 
 type AddOrModifyPropTypes = 'subtask'
@@ -40,7 +40,7 @@ export interface ModifySubtaskParams extends KanbanPost, ModifyTask {
 }
 
 export interface ImplementationParams extends KanbanPost {
-	params: createTaskParams | Partial<createTaskParams>;
+	params: CreateTaskParams | Partial<CreateTaskParams>;
 	taskId?: Task['_id'];
 	addParam?: string
 	modifyParam?: AddOrModifyPropTypes

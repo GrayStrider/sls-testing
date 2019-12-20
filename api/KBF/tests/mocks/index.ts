@@ -1,5 +1,5 @@
-import {Board, Collaborator, Date, Label, SubTask, Task} from '../../../../types/kanbanflow'
-import {createTaskParams} from '../../types/interfaces'
+import {Board, Collaborator, Date, Label, OtherTaskProperties, SubTask, Task} from '../../../../types/kanbanflow'
+import {CreateTaskParams} from '../../types/interfaces'
 
 export const taskMaxFeatures: Task = {
 	_id: 'hia9zFNn',
@@ -16,7 +16,7 @@ export const taskMaxFeatures: Task = {
 	},
 	responsibleUserId: '5b2a3ad796a22ce0d687f7f8181232b1',
 	swimlaneId: 'V8pP3mn7NcSG',
-	dates: [
+	dates     : [
 		{
 			targetColumnId: 'UsbzO1HUaPhw',
 			status: 'active',
@@ -25,7 +25,7 @@ export const taskMaxFeatures: Task = {
 			dueTimestampLocal: '2019-11-01T17:00:00+11:00'
 		}
 	],
-	subTasks: [
+	subtasks  : [
 		{
 			name: 'sub1',
 			finished: false,
@@ -124,25 +124,25 @@ export const testBoard: Board = {
 		}
 	]
 }
-export const minFeaturesParams: createTaskParams = {
+export const minFeaturesParams: CreateTaskParams = {
 	name: 'TESTMIN',
 	columnId: testColumnId,
 	swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
 }
-export const maxFeaturesParams: createTaskParams = {
+export const maxFeaturesParams: CreateTaskParams = {
 	name: 'TESTMAX',
 	columnId: testColumnId,
-	swimlaneId: testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
+	swimlaneId          : testSwimlaneId, //todo warning on ommiting swimlane when board has swimlanes, or implement check before submitting task!
 	// position: 'bottom', //todo position and grouping data are mutually exclusive
-	color: 'green',
-	description: 'TEST',
-	number: {prefix: 'TESTPREFIX', value: 99},
-	responsibleUserId: testUserId,
+	color               : 'green',
+	description         : 'TEST',
+	number              : {prefix: 'TESTPREFIX', value: 99},
+	responsibleUserId   : testUserId,
 	totalSecondsEstimate: 60,
-	pointsEstimate: 100.99,
-	groupingDate: null,
-	dates: [testDate],
-	subTasks: [testSubtasks[0]],
-	labels: [testLabel],
-	collaborators: []
+	pointsEstimate      : 100.99,
+	groupingDate        : null,
+	dates               : [testDate],
+	subtasks            : [testSubtasks[0]],
+	labels              : [testLabel],
+	collaborators       : []
 }

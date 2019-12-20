@@ -7,10 +7,10 @@ const headers = {
 	'Content-type' : 'application/json'
 }
 
-export const dispatch = async <T>(
-	method: 'get' | 'post',
+export async function dispatch<T>(
+	method: 'get' | 'post' | 'delete',
 	path: string | string[],
-	params?: any) => {
+	params?: any) {
 	const config = {
 		method,
 		url          : generatePath(path),

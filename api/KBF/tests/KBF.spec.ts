@@ -3,7 +3,7 @@ import {Attachment, Comment, SubTask, Task, Tasks, TasksBySwimlane} from '../../
 import {kanbanPost, KBF} from '../index'
 import {API_URL, dispatch} from '../lib/axiosGeneric'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
-import {createTaskParams} from '../types/interfaces'
+import {CreateTaskParams} from '../types/interfaces'
 import {maxFeatuesId, maxFeaturesParams, minFeaturesId, minFeaturesParams, taskMaxFeatures, taskMinFeatures, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
 import mock = jest.mock
 
@@ -29,22 +29,22 @@ describe('should fetch data', () => {
 	it('valid board data', async () => {
 		initializeNock(testBoard)
 		const res = await KBF.board()
-		expect(res).toMatchObject(testBoard)
+		expect(res).toStrictEqual(testBoard)
 	})
 	it('a single task by id (min)', async () => {
 		initializeNock(taskMinFeatures)
-		await expect(KBF.tasks.getById(minFeaturesId))
+		await expect(KBF.tasks.get(minFeaturesId))
 			.resolves.toMatchObject(taskMinFeatures)
 	})
 	it('a single task by id (max)', async () => {
 		initializeNock(taskMaxFeatures)
-		await expect(KBF.tasks.getById(maxFeatuesId))
+		await expect(KBF.tasks.get(maxFeatuesId))
 			.resolves.toMatchObject(taskMaxFeatures)
 	})
 	
 	
 	it('multiple tasks by id', async () => {
-		const act = await KBF.tasks.getById([maxFeatuesId, minFeaturesId])
+		const act = await KBF.tasks.get([maxFeatuesId, minFeaturesId])
 		expect(act[0]).toMatchObject(taskMaxFeatures)
 		expect(act[1]).toMatchObject(taskMinFeatures)
 	})
@@ -113,7 +113,7 @@ describe('should fetch data', () => {
 			createdTimestamp: '2019-11-01T04:21:31.774Z'
 		}
 		initializeNock([commentExp])
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'comments')
+		const act = await KBF.tasks.getProperty(maxFeatuesId, 'comments')
 		
 		expect(act).toMatchObject(
 			expect.arrayContaining([
@@ -124,7 +124,7 @@ describe('should fetch data', () => {
 	})
 	it('labels', async () => {
 		initializeNock([testLabel])
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'labels')
+		const act = await KBF.tasks.getProperty(maxFeatuesId, 'labels')
 		
 		expect(act).toMatchObject(
 			expect.arrayContaining([
@@ -134,7 +134,7 @@ describe('should fetch data', () => {
 	})
 	it('dates', async () => {
 		initializeNock([testDate])
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'dates')
+		const act = await KBF.tasks.getProperty(maxFeatuesId, 'dates')
 		expect(act).toMatchObject(
 			expect.arrayContaining([
 				expect.objectContaining(testDate)
@@ -144,13 +144,13 @@ describe('should fetch data', () => {
 	})
 	it('subtasks', async () => {
 		initializeNock(testSubtasks)
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'subtasks')
+		const act = await KBF.tasks.getProperty(maxFeatuesId, 'subtasks')
 		expect(act[0]).toMatchObject(testSubtasks[0])
 		expect(act[1]).toMatchObject(testSubtasks[1])
 	})
 	it('collaborators', async () => {
 		initializeNock([])
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'collaborators')
+		const act = await KBF.tasks.getProperty(maxFeatuesId, 'collaborators')
 		expect(act).toStrictEqual([])
 		
 	})
@@ -165,13 +165,13 @@ describe('should fetch data', () => {
 			createdTimestamp: '2019-11-01T12:37:01.675Z',
 		}
 		initializeNock([exp])
-		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'attachments')
+		const act = await KBF.tasks.getProperty(maxFeatuesId, 'attachments')
 		expect(act[0]).toMatchObject(exp)
 	})
 	
 	it('from several tasks', async () => {
 		initializeNock([['comment']])
-		const res = await KBF.tasks.getPropertyById([maxFeatuesId, minFeaturesId], 'comments')
+		const res = await KBF.tasks.getProperty([maxFeatuesId, minFeaturesId], 'comments')
 		expect(res[0].length).toBe(1)
 	})
 })
@@ -192,11 +192,11 @@ describe('should create / update / delete [tasks / properties]', () => {
 	})
 	
 	it('should update task', async () => {
-		const changes: Partial<createTaskParams> = {
+		const changes: Partial<CreateTaskParams> = {
 			name: 'CHANGED'
 		}
 		await KBF.tasks.update(testTempMaxTaskId, changes)
-		const result = await KBF.tasks.getById(testTempMaxTaskId)
+		const result = await KBF.tasks.get(testTempMaxTaskId)
 		expect(result.name).toBe(changes.name)
 	})
 	
@@ -207,7 +207,7 @@ describe('should create / update / delete [tasks / properties]', () => {
 			userId  : testUserId,
 		}
 		await KBF.tasks.update(testTempMaxTaskId, {
-			subTasks: [sub]
+			subtasks: [sub]
 		})
 		
 	})
@@ -218,15 +218,17 @@ describe('should create / update / delete [tasks / properties]', () => {
 			userId  : testUserId,
 		}
 		await KBF.tasks.update(testTempMaxTaskId, {
-			subTasks: [sub]
+			subtasks: [sub]
 		})
 		
-		KBF.tasks.getPropertyById(testTempMaxTaskId, 'subtasks').then((res) =>
+		KBF.tasks.getProperty(testTempMaxTaskId, 'subtasks').then((res) =>
 			expect(res[0]).toMatchObject(sub))
 	})
 	// etc
 	
-	it.todo('should delete subtask')
+	it('should delete subtask', async () => {
+		await KBF.tasks.deleteById(testTempMaxTaskId)
+	})
 	
 	it.todo('should delete task')
 })
