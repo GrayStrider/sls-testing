@@ -9,16 +9,13 @@ import mock = jest.mock
 
 process.env.NOCK_ENABLED = 'true'
 
-const nockCases = [
-	['board', testBoard],
-	['test', {test: 'test123'}]
-]
-
 const initializeNock = (response: {}) => {
 	if (process.env.NOCK_ENABLED) {
 		nock(/.*/)
 			.get(/.*/)
+			.times(Infinity)
 			.reply(200, response)
+		nock.cleanAll()
 	}
 }
 
@@ -29,16 +26,18 @@ describe('should fetch data', () => {
 		expect(res).toMatchObject(testBoard)
 	})
 	it('a single task by id', async () => {
+		initializeNock(taskMaxFeatures)
 		await expect(KBF.tasks.getById(maxFeatuesId))
 			.resolves.toMatchObject(taskMaxFeatures)
+		initializeNock(taskMinFeatures)
 		await expect(KBF.tasks.getById(minFeaturesId))
 			.resolves.toMatchObject(taskMinFeatures)
 	})
-	it('multiple tasks by id', () => {
-		KBF.tasks.getById([maxFeatuesId, minFeaturesId]).then((act) => {
-			expect(act[0]).toMatchObject(taskMaxFeatures)
-			expect(act[1]).toMatchObject(taskMinFeatures)
-		})
+	it('multiple tasks by id', async () => {
+		initializeNock([taskMaxFeatures, taskMinFeatures])
+		const act = await KBF.tasks.getById([maxFeatuesId, minFeaturesId])
+		expect(act[0]).toMatchObject(taskMaxFeatures)
+		expect(act[1]).toMatchObject(taskMinFeatures)
 	})
 	it.skip('all tasks in the column', async () => {
 		const expTasks: Tasks = [
@@ -93,10 +92,9 @@ describe('should fetch data', () => {
 		expect(actByColumnAndSwimlane).toMatchObject(expByColumnAndSwimlane)
 		
 	})
-	it('all tasks on the board', () => {
-		KBF.tasks.getAll().then((act) =>
-			// snapshot will do, since all types are tested in previous tests.
-			expect(act).toMatchSnapshot())
+	it('all tasks on the board', async () => {
+		await expect(KBF.tasks.getAll()).resolves
+			.toMatchSnapshot()
 	})
 	it('comments', async () => {
 		const act = await KBF.tasks.getPropertyById(maxFeatuesId, 'comments')
@@ -166,80 +164,81 @@ describe('should fetch data', () => {
 })
 
 describe('should create / update / delete [tasks / properties]', () => {
-	let testTempMaxTaskId: string// to delete later
+	let testTempMaxTaskId: string // to delete later
 	let testTempMinTaskId: string
 	
 	it('should add new task', async () => {
-		KBF.tasks.create(minFeaturesParams).then((act) => {
-			console.log(act)
-			testTempMinTaskId = act.taskId
-			expect(act).toHaveProperty(['taskId'])
-			expect(act).toHaveProperty(['taskNumber'])
-		})
-		
-		KBF.tasks.create(maxFeaturesParams).then((act) => {
-			testTempMaxTaskId = act.taskId
-			expect(act).toHaveProperty(['taskId'])
-			expect(act).toHaveProperty(['taskNumber'])
-		})
+		initializeNock(minFeaturesParams)
+		const actMin = await KBF.tasks.create(minFeaturesParams)
+		testTempMinTaskId = actMin.taskId
+		expect(actMin).toHaveProperty(['taskId'])
+		expect(actMin).toHaveProperty(['taskNumber'])
 	})
-	it('should update task', async () => {
-		const changes: Partial<createTaskParams> = {
-			name: 'CHANGED'
-			// todo
+	
+	KBF.tasks.create(maxFeaturesParams).then((act) => {
+		testTempMaxTaskId = act.taskId
+		expect(Object.keys(act)).toEqual(['taskId', 'taskNumber'])
+		expect(act).toHaveProperty(['taskId'])
+		expect(act).toHaveProperty(['taskNumber'])
+	})
+
+it('should update task', async () => {
+	const changes: Partial<createTaskParams> = {
+		name: 'CHANGED'
+		// todo
+	}
+	await KBF.tasks.update(testTempMaxTaskId, changes)
+	const result = await KBF.tasks.getById(testTempMaxTaskId)
+	expect(result.name).toBe(changes.name)
+})
+it.skip('should create subtask', () => {
+	kanbanPost({
+		addParam: 'subtask', taskId: maxFeatuesId,
+		params  : {
+			name    : 'ADDED SUBTASK',
+			finished: false,
+			userId  : testUserId,
 		}
-		await KBF.tasks.update(testTempMaxTaskId, changes)
-		const result = await KBF.tasks.getById(testTempMaxTaskId)
-		expect(result.name).toBe(changes.name)
+	}).then((act) =>
+		expect(act).toHaveProperty('insertIndex'))
+})
+it.skip('should update subtasks', () => {
+	kanbanPost({
+		modifyParam: 'subtask',
+		taskId     : maxFeatuesId, //todo
+		params     : {finished: true}
 	})
-	it.skip('should create subtask', () => {
-		kanbanPost({
-			addParam: 'subtask', taskId: maxFeatuesId,
-			params  : {
-				name    : 'ADDED SUBTASK',
-				finished: false,
-				userId  : testUserId,
-			}
-		}).then((act) =>
-			expect(act).toHaveProperty('insertIndex'))
-	})
-	it.skip('should update subtasks', () => {
-		kanbanPost({
-			modifyParam: 'subtask',
-			taskId     : maxFeatuesId, //todo
-			params     : {finished: true}
-		})
-	})
-	it.todo('should delete subtask')
-	
-	it.todo('should create label')
-	it.todo('should update label')
-	it.todo('should delete label')
-	
-	
-	it.todo('should create / update date')
-	it.todo('should create / update date')
-	it.todo('should delete date')
-	
-	
-	it.todo('should create add collaborator')
-	it.todo('should delete collaborator')
-	
-	
-	it.todo('should create comment')
-	it.todo('update comment')
-	it.todo('should delete comment')
-	
-	
-	it.todo('should add attachment')
-	it.todo('should delete attachment')
-	
-	
-	it.todo('should add manual time entry')
-	it.todo('should update manual time entry')
-	it.todo('should delete manual time entry')
-	
-	it.todo('should delete task')
+})
+it.todo('should delete subtask')
+
+it.todo('should create label')
+it.todo('should update label')
+it.todo('should delete label')
+
+
+it.todo('should create / update date')
+it.todo('should create / update date')
+it.todo('should delete date')
+
+
+it.todo('should create add collaborator')
+it.todo('should delete collaborator')
+
+
+it.todo('should create comment')
+it.todo('update comment')
+it.todo('should delete comment')
+
+
+it.todo('should add attachment')
+it.todo('should delete attachment')
+
+
+it.todo('should add manual time entry')
+it.todo('should update manual time entry')
+it.todo('should delete manual time entry')
+
+it.todo('should delete task')
 })
 describe('should manage time entries', () => {
 	
