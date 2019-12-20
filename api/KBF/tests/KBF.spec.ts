@@ -5,8 +5,9 @@ import {API_URL, dispatch} from '../lib/axiosGeneric'
 import {getAllTasksFromBoard, getBoard, getTaskByID, getTaskDetailsById, getTasksByColumn, getTasksByColumnAndSwimlane} from '../requests'
 import {createTaskParams} from '../types/interfaces'
 import {maxFeatuesId, maxFeaturesParams, minFeatureId, minFeaturesParams, taskMaxFeatures, taskMinFeatues, testBoard, testDate, testLabel, testSubtasks, testUserId} from './mocks'
+import mock = jest.mock
 
-process.env.NOCK_ENABLED = 'true'
+// process.env.NOCK_ENABLED = 'true'
 
 const nockCases = [
 	['board', testBoard],
@@ -26,9 +27,22 @@ beforeAll(() => {
 	} else console.log('[Nock is disabled, testing against live API]')
 })
 
+let mockReply: {};
+beforeEach(() => {
+	if (process.env.NOCK_ENABLED) {
+		nock(/.*/)
+			.get(/.*/)
+			.reply(200, mockReply)
+	}
+})
+afterEach(() => {
+	mockReply = {error: 'reply wasn\'t set, check your tests'}
+})
+
 describe('should fetch data', () => {
 	it('valid board data', async () => {
 		const res = await KBF.board()
+		mockReply = testBoard
 		expect(res).toMatchObject(testBoard)
 	})
 	it('a single task by id', () => {
