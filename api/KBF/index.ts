@@ -1,5 +1,4 @@
 import axios from 'axios'
-import {type} from 'os'
 import {Mock} from 'ts-mockery'
 import {Board, RequestProps, Task} from '../../types/kanbanflow'
 import {dispatch} from './lib/axiosGeneric'
