@@ -13,8 +13,9 @@ const nockCases = [
 	['test', {test: 'test123'}]
 ]
 
-beforeEach(() => {
+beforeAll(() => {
 	if (process.env.NOCK_ENABLED) {
+		console.log('[Nock is enabled, testing against mock API]')
 		nockCases
 			.forEach((value) =>
 				nock(API_URL)
@@ -22,24 +23,13 @@ beforeEach(() => {
 					.delay(500)
 					.reply(200, value[1])
 			)
-	}
-})
-
-
-it('should return mock response if nock is enabled', async () => {
-	if (!process.env.NOCK_ENABLED) {
-		console.log('[Nock is disabled, testing against live API]')
-		return
-	}
-	console.log('[Nock is enabled, testing against mock API]')
-	const res = await dispatch('get', 'test')
-	expect(res).toMatchObject({test: 'test123'})
+	} else console.log('[Nock is disabled, testing against live API]')
 })
 
 describe('should fetch data', () => {
-	it('valid board data', () => {
-		KBF.board().then((res) =>
-			expect(res).toMatchObject(testBoard))
+	it('valid board data', async () => {
+		const res = await KBF.board()
+		expect(res).toMatchObject(testBoard)
 	})
 	it('a single task by id', () => {
 		KBF.tasks.getById(maxFeatuesId).then((act) =>
@@ -178,11 +168,12 @@ describe('should fetch data', () => {
 		)
 	})
 })
+
 describe('should create / update / delete [tasks / properties]', () => {
 	let testTempMaxTaskId: string// to delete later
 	let testTempMinTaskId: string
 	
-	it('should add new task', () => {
+	it('should add new task', async () => {
 		KBF.tasks.create(minFeaturesParams).then((act) => {
 			console.log(act)
 			testTempMinTaskId = act.taskId
@@ -254,7 +245,6 @@ describe('should create / update / delete [tasks / properties]', () => {
 	
 	it.todo('should delete task')
 })
-
 describe('should manage time entries', () => {
 	
 	it.todo('should get stoppwatch entries')
@@ -268,8 +258,8 @@ describe('should manage time entries', () => {
 })
 
 it.todo('should get users')
-it.todo('should get events')
 
+it.todo('should get events')
 describe('should manage webhooks', () => {
 	it.todo('should create webhook')
 	it.todo('should update webhook')
@@ -277,4 +267,12 @@ describe('should manage webhooks', () => {
 	it.todo('should recieve events')
 	it.todo('should verify signature')
 	
+})
+
+it('should return mock response', async () => {
+	if (!process.env.NOCK_ENABLED) {
+		return
+	}
+	const res = await dispatch('get', 'test')
+	expect(res).toMatchObject({test: 'test123'})
 })
